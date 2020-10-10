@@ -1,7 +1,6 @@
 package yellowsunn.employee_management.entity;
 
-import lombok.Getter;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +8,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "departments")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
 @Getter
+@EqualsAndHashCode
+@Table(name = "departments")
 public class Department {
 
     @Id

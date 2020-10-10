@@ -1,5 +1,6 @@
 package yellowsunn.employee_management.entity;
 
+import lombok.*;
 import yellowsunn.employee_management.entity.id.SalaryId;
 
 import javax.persistence.Column;
@@ -9,6 +10,9 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
+@Getter
 @Table(name = "salaries")
 public class Salary {
 

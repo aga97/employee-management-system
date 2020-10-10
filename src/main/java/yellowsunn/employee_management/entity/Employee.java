@@ -1,12 +1,15 @@
 package yellowsunn.employee_management.entity;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
 @Getter
+@EqualsAndHashCode
 @Table(name = "employees")
 public class Employee {
 

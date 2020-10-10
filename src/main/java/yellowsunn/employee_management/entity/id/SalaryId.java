@@ -1,7 +1,6 @@
 package yellowsunn.employee_management.entity.id;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import yellowsunn.employee_management.entity.Employee;
 
 import javax.persistence.*;
@@ -9,7 +8,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Embeddable
-@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
 @EqualsAndHashCode
 public class SalaryId implements Serializable {
 

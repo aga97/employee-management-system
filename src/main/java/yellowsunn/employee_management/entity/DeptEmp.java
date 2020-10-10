@@ -1,6 +1,6 @@
 package yellowsunn.employee_management.entity;
 
-import lombok.Getter;
+import lombok.*;
 import yellowsunn.employee_management.entity.id.DeptEmpId;
 
 import javax.persistence.Column;
@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import java.time.LocalDate;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
 @Getter
 public class DeptEmp {
 

@@ -1,7 +1,6 @@
 package yellowsunn.employee_management.entity.id;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.entity.Employee;
 
@@ -9,6 +8,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @Builder
 @Getter
 @EqualsAndHashCode
 public class DeptEmpId implements Serializable {
