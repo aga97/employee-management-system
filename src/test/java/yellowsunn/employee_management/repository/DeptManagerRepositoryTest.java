@@ -1,106 +1,124 @@
 package yellowsunn.employee_management.repository;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.entity.DeptManager;
 import yellowsunn.employee_management.entity.Employee;
-import yellowsunn.employee_management.entity.Gender;
 import yellowsunn.employee_management.entity.id.DeptManagerId;
 
+import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Sql({
+        "/sample_datasets/departments.sql",
+        "/sample_datasets/employees.sql",
+        "/sample_datasets/dept_manager.sql"
+})
 @DataJpaTest
 class DeptManagerRepositoryTest {
 
     @Autowired DeptManagerRepository deptManagerRepository;
     @Autowired TestEntityManager em;
-    Integer empNo; // employee id
-    String deptNo; // department id
-    DeptManagerId deptManagerId;
-
-    @BeforeEach
-    public void persist_employee_and_department() {
-        /* employee */
-        empNo = 10001;
-        LocalDate birthDate = LocalDate.parse("1953-09-02");
-        String firstName = "Georgi";
-        String lastName = "Facello";
-        Gender gender = Gender.M;
-        LocalDate hireDate = LocalDate.parse("1986-06-26");
-
-        /* department */
-        deptNo = "d001";
-        String deptName = "Marketing";
-
-        Employee saveEmployee = em.persist(Employee.builder()
-                .empNo(empNo)
-                .birthDate(birthDate)
-                .firstName(firstName)
-                .lastName(lastName)
-                .gender(gender)
-                .hireDate(hireDate)
-                .build());
-
-        Department saveDepartment = em.persist(Department.builder()
-                .deptNo(deptNo)
-                .deptName(deptName)
-                .build());
-
-        assertThat(saveEmployee).isNotNull();
-        assertThat(saveDepartment).isNotNull();
-        assertThat(saveEmployee.getEmpNo()).isEqualTo(empNo);
-        assertThat(saveDepartment.getDeptNo()).isEqualTo(deptNo);
-    }
-
-    private DeptManager saveDeptManager() {
-        Employee employee = em.find(Employee.class, empNo);
-        Department department = em.find(Department.class, deptNo);
-        LocalDate fromDate = LocalDate.parse("1985-01-01");
-        LocalDate toDate = LocalDate.parse("1991-10-01");
-
-        deptManagerId = DeptManagerId.builder()
-                .employee(employee)
-                .department(department)
-                .build();
-
-        return deptManagerRepository.save(DeptManager.builder()
-                .id(deptManagerId)
-                .fromDate(fromDate)
-                .toDate(toDate)
-                .build());
-    }
 
     @Test
     public void save_test() throws Exception {
-        DeptManager saveDeptManager = saveDeptManager();
+        //given
+        Integer empNo = 10017;
+        String deptNo = "d001";
+        Employee employee = em.find(Employee.class, empNo);
+        Department department = em.find(Department.class, deptNo);
+        LocalDate fromDate = LocalDate.now();
+        LocalDate toDate = LocalDate.parse("9999-01-01");
 
+        //when
+        DeptManagerId deptManagerId = DeptManagerId.builder()
+                .empNo(empNo)
+                .deptNo(deptNo)
+                .build();
+
+        long count = deptManagerRepository.count();
+
+        deptManagerRepository.save(DeptManager.builder()
+                .id(deptManagerId)      // 이걸로 isNew() 조건이 들어가고 있으면 update(merge), 없으면 insert
+                .employee(employee)     // 실제로 들어가는 emp_no
+                .department(department) // 실제로 들어가는 dept_no
+                .fromDate(fromDate)
+                .toDate(toDate)
+                .build());
         //then
-        assertThat(saveDeptManager.getId()).isEqualTo(deptManagerId);
+        assertThat(deptManagerRepository.count()).isEqualTo(count + 1);
+    }
+
+    @Test
+    public void 기본키중복_테스트() throws Exception {
+        //given
+        Integer empNo = 110022;
+        String deptNo = "d001";
+        Employee employee = em.find(Employee.class, empNo);
+        Department department = em.find(Department.class, deptNo);
+        LocalDate fromDate = LocalDate.now();
+        LocalDate toDate = LocalDate.parse("9999-01-01");
+
+        DeptManagerId deptManagerId = DeptManagerId.builder()
+                .empNo(empNo)
+                .deptNo(deptNo)
+                .build();
+
+        deptManagerRepository.findById(deptManagerId);
+
+        //when
+        //then
+        assertThrows(EntityExistsException.class, () -> {
+            em.persist(DeptManager.builder()
+                    .id(deptManagerId)
+                    .employee(employee)
+                    .department(department)
+                    .fromDate(fromDate)
+                    .toDate(toDate)
+                    .build());
+        });
     }
 
     @Test
     public void find_test() throws Exception {
         //given
-        saveDeptManager();
+        Integer empNo = 110022;
+        String deptNo = "d001";
+
+        DeptManagerId deptManagerId = DeptManagerId.builder()
+                .empNo(empNo)
+                .deptNo(deptNo)
+                .build();
 
         //when
-        DeptManager findDeptManger = deptManagerRepository.findById(deptManagerId).orElse(null);
+        Optional<DeptManager> findDeptManager = deptManagerRepository.findById(deptManagerId);
 
         //then
-        assertThat(findDeptManger).isNotNull();
-        assertThat(findDeptManger.getId()).isEqualTo(deptManagerId);
+        findDeptManager.ifPresentOrElse(deptManager -> {
+            assertThat(deptManager.getId()).isEqualTo(deptManagerId);
+        }, Assertions::fail);
     }
 
     @Test
     public void delete_test() throws Exception {
         //given
-        saveDeptManager();
+        Integer empNo = 110022;
+        String deptNo = "d001";
+
+        DeptManagerId deptManagerId = DeptManagerId.builder()
+                .empNo(empNo)
+                .deptNo(deptNo)
+                .build();
+
         long count = deptManagerRepository.count();
 
         //when

@@ -13,14 +13,19 @@ import java.time.LocalDate;
 @Table(name = "titles")
 public class Title {
 
+    @EmbeddedId
+    private TitleId id;
+
+    @MapsId("empNo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "emp_no")
+    private Employee employee;
+
     /**
      * TitleId
-     * - Employee employee;
      * - String title;
      * - LocalDate fromDate
      */
-    @EmbeddedId
-    private TitleId id;
 
     @Column(nullable = false)
     private LocalDate toDate;

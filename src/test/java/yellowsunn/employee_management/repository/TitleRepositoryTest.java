@@ -1,94 +1,123 @@
 package yellowsunn.employee_management.repository;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.entity.Employee;
-import yellowsunn.employee_management.entity.Gender;
 import yellowsunn.employee_management.entity.Title;
 import yellowsunn.employee_management.entity.id.TitleId;
 
+import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Sql({
+        "/sample_datasets/employees.sql",
+        "/sample_datasets/titles.sql"
+})
 @DataJpaTest
 class TitleRepositoryTest {
 
     @Autowired TitleRepository titleRepository;
     @Autowired TestEntityManager em;
 
-    Integer empNo; //employee id
-    TitleId titleId;
-
-    @BeforeEach
-    public void persist_employee() {
-        empNo = 10001;
-        LocalDate birthDate = LocalDate.parse("1953-09-02");
-        String firstName = "Georgi";
-        String lastName = "Facello";
-        Gender gender = Gender.M;
-        LocalDate hireDate = LocalDate.parse("1986-06-26");
-
-        Employee saveEmployee = em.persist(Employee.builder()
-                .empNo(empNo)
-                .birthDate(birthDate)
-                .firstName(firstName)
-                .lastName(lastName)
-                .gender(gender)
-                .hireDate(hireDate)
-                .build());
-
-        assertThat(saveEmployee).isNotNull();
-        assertThat(saveEmployee.getEmpNo()).isEqualTo(empNo);
-    }
-
-    private Title saveTitle() {
+    @Test
+    public void save_test() throws Exception {
+        //given
+        Integer empNo = 10017;
         Employee employee = em.find(Employee.class, empNo);
-        String title = "Senior Engineer";
-        LocalDate fromDate = LocalDate.parse("1986-06-26");
+        String title = "Jobless";
+        LocalDate fromDate = LocalDate.now();
         LocalDate toDate = LocalDate.parse("9999-01-01");
 
-        titleId = TitleId.builder()
-                .employee(employee)
+        TitleId titleId = TitleId.builder()
+                .empNo(empNo)
                 .title(title)
                 .fromDate(fromDate)
                 .build();
 
+        long count = titleRepository.count();
+
         //when
-        return titleRepository.save(Title.builder()
+        titleRepository.save(Title.builder()
                 .id(titleId)
+                .employee(employee)
                 .toDate(toDate)
                 .build());
+
+        //then
+        assertThat(titleRepository.count()).isEqualTo(count + 1);
     }
 
     @Test
-    public void save_test() throws Exception {
-        Title saveTitle = saveTitle();
+    public void 기본키중복_테스트() throws Exception {
+        //given
+        Integer empNo = 10017;
+        Employee employee = em.find(Employee.class, empNo);
+        String title = "Senior Staff";
+        LocalDate fromDate = LocalDate.parse("2000-08-03");
+        LocalDate toDate = LocalDate.parse("9999-01-01");
 
+        TitleId titleId = TitleId.builder()
+                .empNo(empNo)
+                .title(title)
+                .fromDate(fromDate)
+                .build();
+
+        titleRepository.findById(titleId);
+
+        //when
         //then
-        assertThat(saveTitle.getId()).isEqualTo(titleId);
+        assertThrows(EntityExistsException.class, () -> {
+            em.persist(Title.builder()
+                    .id(titleId)
+                    .employee(employee)
+                    .toDate(toDate)
+                    .build());
+        });
     }
 
     @Test
     public void find_test() throws Exception {
         //given
-        saveTitle();
+        Integer empNo = 10017;
+        String title = "Senior Staff";
+        LocalDate fromDate = LocalDate.parse("2000-08-03");
+
+        TitleId titleId = TitleId.builder()
+                .empNo(empNo)
+                .title(title)
+                .fromDate(fromDate)
+                .build();
 
         //when
-        Title title = titleRepository.findById(titleId).orElse(null);
+        Optional<Title> findTitle = titleRepository.findById(titleId);
 
         //then
-        assertThat(title).isNotNull();
-        assertThat(title.getId()).isEqualTo(titleId);
+        findTitle.ifPresentOrElse(title1 -> {
+            assertThat(title1.getId()).isEqualTo(titleId);
+        }, Assertions::fail);
     }
 
     @Test
     public void delete_test() throws Exception {
         //given
-        saveTitle();
+        Integer empNo = 10017;
+        String title = "Senior Staff";
+        LocalDate fromDate = LocalDate.parse("2000-08-03");
+
+        TitleId titleId = TitleId.builder()
+                .empNo(empNo)
+                .title(title)
+                .fromDate(fromDate)
+                .build();
+
         long count = titleRepository.count();
 
         //when

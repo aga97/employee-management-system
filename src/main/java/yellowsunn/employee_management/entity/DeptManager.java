@@ -3,9 +3,7 @@ package yellowsunn.employee_management.entity;
 import lombok.*;
 import yellowsunn.employee_management.entity.id.DeptManagerId;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -14,12 +12,18 @@ import java.time.LocalDate;
 @Getter
 public class DeptManager {
 
-    /**
-     * Department department;
-     * Employee employee;
-     */
     @EmbeddedId
     private DeptManagerId id;
+
+    @MapsId("empNo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "emp_no")
+    private Employee employee;
+
+    @MapsId("deptNo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_no")
+    private Department department;
 
     @Column(nullable = false)
     private LocalDate fromDate;

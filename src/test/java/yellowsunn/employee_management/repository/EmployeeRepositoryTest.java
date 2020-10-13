@@ -1,64 +1,67 @@
 package yellowsunn.employee_management.repository;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.entity.Employee;
 import yellowsunn.employee_management.entity.Gender;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql("/sample_datasets/employees.sql")
 @DataJpaTest
 class EmployeeRepositoryTest {
 
     @Autowired EmployeeRepository employeeRepository;
-    Integer empNo; // employee id
 
-    private Employee saveEmployee() {
-        empNo = 10001;
-        LocalDate birthDate = LocalDate.parse("1953-09-02");
-        String firstName = "Georgi";
-        String lastName = "Facello";
+    @Test
+    public void save_test() throws Exception {
+        //given
+        LocalDate birthDate = LocalDate.parse("1995-10-07");
+        String firstName = "Hankook";
+        String lastName = "Cho";
         Gender gender = Gender.M;
-        LocalDate hireDate = LocalDate.parse("1986-06-26");
+        LocalDate hireDate = LocalDate.now();
 
-        return employeeRepository.save(Employee.builder()
-                .empNo(empNo)
+        long count = employeeRepository.count();
+
+        //when
+        Employee saveEmployee = employeeRepository.save(Employee.builder()
                 .birthDate(birthDate)
                 .firstName(firstName)
                 .lastName(lastName)
                 .gender(gender)
                 .hireDate(hireDate)
                 .build());
-    }
-
-    @Test
-    public void save_test() throws Exception {
-        Employee saveEmployee = saveEmployee();
 
         //then
-        assertThat(saveEmployee.getEmpNo()).isEqualTo(empNo);
+        assertThat(saveEmployee.getEmpNo()).isNotNull(); //id는 자동 생성 (IDENTIFY)
+        assertThat(employeeRepository.count()).isEqualTo(count + 1);
     }
 
     @Test
     public void find_test() throws Exception {
         //given
-        saveEmployee();
+        Integer empNo = 10017;
 
         //when
-        Employee findEmployee = employeeRepository.findById(empNo).orElse(null);
+        Optional<Employee> employeeOptional = employeeRepository.findById(empNo);
 
         //then
-        assertThat(findEmployee).isNotNull();
-        assertThat(findEmployee.getEmpNo()).isEqualTo(empNo);
+        employeeOptional.ifPresentOrElse(employee -> {
+            assertThat(employee.getEmpNo()).isEqualTo(empNo);
+        }, Assertions::fail);
     }
 
     @Test
     public void delete_test() throws Exception {
         //given
-        saveEmployee();
+        Integer empNo = 10017;
         long count = employeeRepository.count();
 
         //when

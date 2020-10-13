@@ -1,93 +1,120 @@
 package yellowsunn.employee_management.repository;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.entity.Employee;
-import yellowsunn.employee_management.entity.Gender;
 import yellowsunn.employee_management.entity.Salary;
 import yellowsunn.employee_management.entity.id.SalaryId;
 
+import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Sql({
+        "/sample_datasets/employees.sql",
+        "/sample_datasets/salaries.sql"
+})
 @DataJpaTest
 class SalaryRepositoryTest {
 
     @Autowired SalaryRepository salaryRepository;
     @Autowired TestEntityManager em;
 
-    Integer empNo; //employee id
-    SalaryId salaryId;
-
-    @BeforeEach
-    public void persist_employee() {
-        empNo = 10001;
-        LocalDate birthDate = LocalDate.parse("1953-09-02");
-        String firstName = "Georgi";
-        String lastName = "Facello";
-        Gender gender = Gender.M;
-        LocalDate hireDate = LocalDate.parse("1986-06-26");
-
-        Employee saveEmployee = em.persist(Employee.builder()
-                .empNo(empNo)
-                .birthDate(birthDate)
-                .firstName(firstName)
-                .lastName(lastName)
-                .gender(gender)
-                .hireDate(hireDate)
-                .build());
-
-        assertThat(saveEmployee).isNotNull();
-        assertThat(saveEmployee.getEmpNo()).isEqualTo(empNo);
-    }
-
-    private Salary saveSalary() {
+    @Test
+    public void save_test() throws Exception {
+        //given
+        Integer empNo = 10017;
+        LocalDate fromDate = LocalDate.now();
         Employee employee = em.find(Employee.class, empNo);
-        int salary = 60117;
-        LocalDate fromData = LocalDate.parse("1986-06-26");
-        LocalDate toDate = LocalDate.parse("1987-06-26");
+        int salary = 100000;
+        LocalDate toDate = LocalDate.parse("9999-01-01");
 
-        salaryId = SalaryId.builder()
-                .employee(employee)
-                .fromDate(fromData)
+        SalaryId salaryId = SalaryId.builder()
+                .empNo(empNo)
+                .fromDate(fromDate)
                 .build();
 
-        return salaryRepository.save(Salary.builder()
+        long count = salaryRepository.count();
+
+        //when
+        salaryRepository.save(Salary.builder()
                 .id(salaryId)
+                .employee(employee)
                 .salary(salary)
                 .toDate(toDate)
                 .build());
+
+        //then
+        assertThat(salaryRepository.count()).isEqualTo(count + 1);
     }
 
     @Test
-    public void save_test() throws Exception {
-        Salary saveSalary = saveSalary();
+    public void 기본키중복_테스트() throws Exception {
+        //given
+        Integer empNo = 10017;
+        LocalDate fromDate = LocalDate.parse("1993-08-03");
 
+        Employee employee = em.find(Employee.class, empNo);
+        int salary = 100000;
+        LocalDate toDate = LocalDate.parse("9999-01-01");
+
+        SalaryId salaryId = SalaryId.builder()
+                .empNo(empNo)
+                .fromDate(fromDate)
+                .build();
+
+        salaryRepository.findById(salaryId);
+
+        //when
         //then
-        assertThat(saveSalary.getId()).isEqualTo(salaryId);
+        assertThrows(EntityExistsException.class, () -> {
+            em.persist(Salary.builder()
+                    .id(salaryId)
+                    .employee(employee)
+                    .salary(salary)
+                    .toDate(toDate)
+                    .build());
+        });
     }
 
     @Test
     public void find_test() throws Exception {
         //given
-        saveSalary();
+        Integer empNo = 10017;
+        LocalDate fromDate = LocalDate.parse("1993-08-03");
+
+        SalaryId salaryId = SalaryId.builder()
+                .empNo(empNo)
+                .fromDate(fromDate)
+                .build();
 
         //when
-        Salary findSalary = salaryRepository.findById(salaryId).orElse(null);
+        Optional<Salary> findSalary = salaryRepository.findById(salaryId);
 
         //then
-        assertThat(findSalary).isNotNull();
-        assertThat(findSalary.getId()).isEqualTo(salaryId);
+        findSalary.ifPresentOrElse(salary -> {
+            assertThat(salary.getId()).isEqualTo(salaryId);
+        }, Assertions::fail);
     }
 
     @Test
     public void delete_test() throws Exception {
         //given
-        saveSalary();
+        Integer empNo = 10017;
+        LocalDate fromDate = LocalDate.parse("1993-08-03");
+
+        SalaryId salaryId = SalaryId.builder()
+                .empNo(empNo)
+                .fromDate(fromDate)
+                .build();
+
         long count = salaryRepository.count();
 
         //when

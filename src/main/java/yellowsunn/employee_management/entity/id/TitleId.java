@@ -14,9 +14,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class TitleId implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "emp_no")
-    private Employee employee;
+    private Integer empNo;
 
     @Column(length = 50)
     private String title;
