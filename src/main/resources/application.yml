@@ -3,21 +3,22 @@ spring:
     active: local
 
   datasource:
-    url: jdbc:mysql://localhost:3306/test_db?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/employees?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: manager
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    generate-ddl: true
+#    generate-ddl: true
 
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
+        default_batch_fetch_size: 1000
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
 
 logging.level:
   org.hibernate.SQL: debug
