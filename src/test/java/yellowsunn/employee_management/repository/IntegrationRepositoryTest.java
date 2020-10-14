@@ -1,5 +1,6 @@
 package yellowsunn.employee_management.repository;
 
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +51,8 @@ public class IntegrationRepositoryTest {
                 .selectFrom(deptEmp)
                 .join(deptEmp.employee).fetchJoin()       // h2에서는 2개 조인하니까 성능 저하 심함
                 .join(deptEmp.department).fetchJoin()
-                .where(deptEmp.employee.empNo.stringValue().concat("_").concat(deptEmp.toDate.stringValue()) //empNo_toDate
-                        .in(select(subDe.employee.empNo.stringValue().concat("_").concat(subDe.toDate.max().stringValue())) // empNo_max(toDate)
+                .where(Expressions.list(deptEmp.employee.empNo, deptEmp.toDate)
+                        .in(select(subDe.employee.empNo, subDe.toDate.max())
                                 .from(subDe)
                                 .groupBy(subDe.employee.empNo)
                         )
