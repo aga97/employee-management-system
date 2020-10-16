@@ -1,6 +1,7 @@
 package yellowsunn.employee_management.repository.custom;
 
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,23 +29,45 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<DeptEmp> findRecentAll(Pageable pageable) {
+    public Page<DeptEmp> findCurrentAll(Pageable pageable) {
         QDeptEmp subDe = new QDeptEmp("subDe");
 
-        List<DeptEmp> results = queryFactory
+        JPAQuery<DeptEmp> query = queryFactory
                 .selectFrom(deptEmp)
-                .join(deptEmp.employee).fetchJoin()
-                .join(deptEmp.department).fetchJoin()
-                .where(Expressions.list(deptEmp.employee.empNo, deptEmp.toDate)
-                        .in(select(subDe.employee.empNo, subDe.toDate.max())
+//                .join(deptEmp.employee).fetchJoin()
+//                .join(deptEmp.department).fetchJoin()
+                .where(Expressions.list(deptEmp.employee.empNo, deptEmp.fromDate, deptEmp.toDate)
+                        .in(select(subDe.employee.empNo, subDe.fromDate.max(), subDe.toDate.max())
                                 .from(subDe)
                                 .groupBy(subDe.employee.empNo)
                         )
                 )
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(deptEmp.employee.empNo.asc())
-                .fetch();
+                .limit(pageable.getPageSize());
+
+        if (pageable.getSort().isEmpty()) {
+            query.orderBy(deptEmp.employee.empNo.asc());
+        }
+
+        pageable.getSort().forEach(order -> {
+            String property = order.getProperty();
+
+            if (property.equals("emp_no")) {
+                query.orderBy(order.isAscending() ? deptEmp.employee.empNo.asc() : deptEmp.employee.empNo.desc());
+            } else if (property.equals("dept_name")) {
+                query.orderBy(order.isAscending() ? deptEmp.department.deptName.asc() : deptEmp.department.deptName.desc());
+            } else if (property.equals("birth_date")) {
+                query.orderBy(order.isAscending() ? deptEmp.employee.birthDate.asc() : deptEmp.employee.birthDate.desc());
+            } else if (property.equals("first_name")) {
+                query.orderBy(order.isAscending() ? deptEmp.employee.firstName.asc() : deptEmp.employee.firstName.desc());
+            } else if (property.equals("last_name")) {
+                query.orderBy(order.isAscending() ? deptEmp.employee.lastName.asc() : deptEmp.employee.lastName.desc());
+            } else if (property.equals("hire_date")) {
+                query.orderBy(order.isAscending() ? deptEmp.employee.hireDate.asc() : deptEmp.employee.hireDate.desc());
+            }
+        });
+
+        List<DeptEmp> results = query.fetch();
 
         long total = queryFactory
                 .selectFrom(QEmployee.employee)
