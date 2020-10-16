@@ -1,5 +1,6 @@
 package yellowsunn.employee_management.repository.custom;
 
+import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,11 +20,9 @@ import static yellowsunn.employee_management.entity.QDeptEmp.deptEmp;
 
 public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
-    private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
     public DeptEmpRepositoryCustomImpl(EntityManager em) {
-        this.em = em;
         queryFactory = new JPAQueryFactory(em);
     }
 
@@ -36,10 +35,10 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                 .selectFrom(deptEmp)
 //                .join(deptEmp.employee).fetchJoin()
 //                .join(deptEmp.department).fetchJoin()
-                .where(Expressions.list(deptEmp.employee.empNo, deptEmp.fromDate, deptEmp.toDate)
-                        .in(select(subDe.employee.empNo, subDe.fromDate.max(), subDe.toDate.max())
+                .where(Expressions.list(deptEmp.employee, deptEmp.fromDate, deptEmp.toDate)
+                        .in(select(subDe.employee, subDe.fromDate.max(), subDe.toDate.max())
                                 .from(subDe)
-                                .groupBy(subDe.employee.empNo)
+                                .groupBy(subDe.employee)
                         )
                 )
                 .offset(pageable.getOffset())
@@ -51,19 +50,31 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
         pageable.getSort().forEach(order -> {
             String property = order.getProperty();
+            ComparableExpressionBase path = null;
 
-            if (property.equals("emp_no")) {
-                query.orderBy(order.isAscending() ? deptEmp.employee.empNo.asc() : deptEmp.employee.empNo.desc());
-            } else if (property.equals("dept_name")) {
-                query.orderBy(order.isAscending() ? deptEmp.department.deptName.asc() : deptEmp.department.deptName.desc());
-            } else if (property.equals("birth_date")) {
-                query.orderBy(order.isAscending() ? deptEmp.employee.birthDate.asc() : deptEmp.employee.birthDate.desc());
-            } else if (property.equals("first_name")) {
-                query.orderBy(order.isAscending() ? deptEmp.employee.firstName.asc() : deptEmp.employee.firstName.desc());
-            } else if (property.equals("last_name")) {
-                query.orderBy(order.isAscending() ? deptEmp.employee.lastName.asc() : deptEmp.employee.lastName.desc());
-            } else if (property.equals("hire_date")) {
-                query.orderBy(order.isAscending() ? deptEmp.employee.hireDate.asc() : deptEmp.employee.hireDate.desc());
+            switch (property) {
+                case "emp_no":
+                    path = deptEmp.employee.empNo;
+                    break;
+                case "dept_name":
+                    path = deptEmp.department.deptName;
+                    break;
+                case "birth_date":
+                    path = deptEmp.employee.birthDate;
+                    break;
+                case "first_name":
+                    path = deptEmp.employee.firstName;
+                    break;
+                case "last_name":
+                    path = deptEmp.employee.lastName;
+                    break;
+                case "hire_date":
+                    path = deptEmp.employee.hireDate;
+                    break;
+            }
+
+            if (path != null) {
+                query.orderBy(order.isAscending() ? path.asc() : path.desc());
             }
         });
 

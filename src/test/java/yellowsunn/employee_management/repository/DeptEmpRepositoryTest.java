@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.entity.DeptEmp;
@@ -13,7 +16,9 @@ import yellowsunn.employee_management.entity.id.DeptEmpId;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -123,5 +128,24 @@ class DeptEmpRepositoryTest {
 
         //then
         assertThat(deptEmpRepository.count()).isEqualTo(count - 1);
+    }
+
+    @Test
+    public void findCurrentAll_test() throws Exception {
+        //given
+        PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(Sort.Direction.ASC, "emp_no"));
+
+        //when
+        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentAll(pageRequest);
+        List<DeptEmp> content = deptEmpPage.getContent();
+
+        //then
+        List<DeptEmpId> deptEmpIds = content.stream().map(DeptEmp::getId).collect(Collectors.toList());
+        assertThat(deptEmpIds)
+                .contains(DeptEmpId.builder().empNo(10017).deptNo("d001").build())
+                .contains(DeptEmpId.builder().empNo(10050).deptNo("d007").build())
+                .doesNotContain(DeptEmpId.builder().empNo(10050).deptNo("d002").build())
+                .contains(DeptEmpId.builder().empNo(10080).deptNo("d003").build())
+                .doesNotContain(DeptEmpId.builder().empNo(10080).deptNo("d002").build());
     }
 }
