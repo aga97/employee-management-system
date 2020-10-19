@@ -33,12 +33,12 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
         JPAQuery<DeptEmp> query = queryFactory
                 .selectFrom(deptEmp)
-//                .join(deptEmp.employee).fetchJoin()
-//                .join(deptEmp.department).fetchJoin()
+                .join(deptEmp.employee).fetchJoin()
+                .join(deptEmp.department).fetchJoin()
                 .where(Expressions.list(deptEmp.employee, deptEmp.fromDate, deptEmp.toDate)
-                        .in(select(subDe.employee, subDe.fromDate.max(), subDe.toDate.max())
+                        .in(select(subDe.employee.empNo, subDe.fromDate.max(), subDe.toDate.max())
                                 .from(subDe)
-                                .groupBy(subDe.employee)
+                                .groupBy(subDe.employee.empNo)
                         )
                 )
                 .offset(pageable.getOffset())
