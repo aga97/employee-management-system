@@ -1,0 +1,37 @@
+const posts = [
+    {
+        title: "Post 01",
+        excerpt: "Lorem ipsum dolor sit amet, est dictas elaboraret te. An vide magna iriure eum, ex eos nibh accusam.",
+        image: "https://picsum.photos/200/300?random=1"
+    },
+
+    {
+        title: "Post 02",
+        excerpt: "Lorem ipsum dolor sit amet, est dictas elaboraret te. An vide magna iriure eum, ex eos nibh accusam.",
+        image: "https://picsum.photos/200/300?random=2"
+    },
+
+    {
+        title: "Post 03",
+        excerpt: "Lorem ipsum dolor sit amet, est dictas elaboraret te. An vide magna iriure eum, ex eos nibh accusam.",
+        image: "https://picsum.photos/200/300?random=3"
+    },
+
+    {
+        title: "Post 04",
+        excerpt: "Lorem ipsum dolor sit amet, est dictas elaboraret te. An vide magna iriure eum, ex eos nibh accusam.",
+        image: "https://picsum.photos/200/300?random=4"
+    },
+
+    {
+        title: "Post 05",
+        excerpt: "Lorem ipsum dolor sit amet, est dictas elaboraret te. An vide magna iriure eum, ex eos nibh accusam.",
+        image: "https://picsum.photos/200/300?random=5"
+    },
+
+    {
+        title: "Post 06",
+        excerpt: "Lorem ipsum dolor sit amet, est dictas elaboraret te. An vide magna iriure eum, ex eos nibh accusam.",
+        image: "https://picsum.photos/200/300?random=6"
+    }
+]
