@@ -45,9 +45,9 @@ function Posts(props) {
 
     return (
         <div className={classes.root}>
-            <Grid container spacing={6}>
+            <Grid container spacing={3} direction="column" justify="center" alignItems="stretch"  >
                 {posts.map(post => (
-                    <Grid item xs={24} md={12}  key={post.title}>
+                    <Grid item xs={6} sm={3} md={12}  key={post.title}>
                         <Card>
                             <CardActionArea>
                                                                 

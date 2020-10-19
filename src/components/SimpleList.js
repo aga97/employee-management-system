@@ -13,7 +13,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
-        maxWidth: 260,
+        maxWidth: 200,
         backgroundColor: theme.palette.background.paper,
         minHeight: 'calc(100vh - 64px)',
         borderRight: '1px solid #ddd',                   
