@@ -10,13 +10,10 @@ import Button from "@material-ui/core/Button";
 import TrendingFlat from '@material-ui/icons/TrendingFlat';
 import { Icon } from "@material-ui/core";
 
-
-
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        padding: 30,
-    },
+        padding: '0',
+    },    
 }));
 
 const posts = [
@@ -43,14 +40,13 @@ const posts = [
 function Posts(props) {
     const classes = useStyles();
 
-    return (
-        <div className={classes.root}>
-            <Grid container spacing={3} direction="column" justify="center" alignItems="stretch"  >
+    return (                
+        <div className={classes.root} >
+            <Grid container spacing={3} direction="row" justify="center" alignItems="stretch">
                 {posts.map(post => (
                     <Grid item xs={6} sm={3} md={12}  key={post.title}>
                         <Card>
-                            <CardActionArea>
-                                                                
+                            <CardActionArea>                                                                
                                 <CardContent>
                                     <Icon fontSize="large">{post.image}</Icon>        
                                     <Typography variant="subtitle2" color="textSecondary" gutterBottom>
