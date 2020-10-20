@@ -96,22 +96,22 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
             ComparableExpressionBase path = null;
 
             switch (property) {
-                case "emp_no":
+                case "empNo":
                     path = deptEmp.employee.empNo;
                     break;
-                case "dept_name":
+                case "deptName":
                     path = deptEmp.department.deptName;
                     break;
-                case "birth_date":
+                case "birthDate":
                     path = deptEmp.employee.birthDate;
                     break;
-                case "first_name":
+                case "firstName":
                     path = deptEmp.employee.firstName;
                     break;
-                case "last_name":
+                case "lastName":
                     path = deptEmp.employee.lastName;
                     break;
-                case "hire_date":
+                case "hireDate":
                     path = deptEmp.employee.hireDate;
                     break;
             }
@@ -139,7 +139,7 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
     }
 
     private BooleanExpression lastNameStartsWith(String lastName) {
-        return StringUtils.hasText(lastName) ? employee.firstName.startsWith(lastName) : null;
+        return StringUtils.hasText(lastName) ? employee.lastName.startsWith(lastName) : null;
     }
 
     private BooleanExpression birthDateEq(LocalDate birthDate) {
