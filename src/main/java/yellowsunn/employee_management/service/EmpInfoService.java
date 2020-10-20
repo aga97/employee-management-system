@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import yellowsunn.employee_management.dto.CurEmpInfoDto;
+import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
 import yellowsunn.employee_management.entity.*;
 import yellowsunn.employee_management.repository.DeptEmpRepository;
 import yellowsunn.employee_management.repository.SalaryRepository;
@@ -22,8 +23,11 @@ public class EmpInfoService {
     private final SalaryRepository salaryRepository;
     private final TitleRepository titleRepository;
 
-    public Page<CurEmpInfoDto> findCurrentAll(Pageable pageable) {
-        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentAll(pageable);
+    /**
+     * 주어진 조건에서 가장 최근 직원 정보를 반환
+     */
+    public Page<CurEmpInfoDto> findCurrentEmployees(EmpSearchCondition condition, Pageable pageable) {
+        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentByCondition(condition, pageable);
         List<DeptEmp> deptEmps = deptEmpPage.getContent();
         List<Employee> employees = deptEmps.stream()
                 .map(DeptEmp::getEmployee)
@@ -32,6 +36,7 @@ public class EmpInfoService {
         List<Salary> salaries = salaryRepository.findCurrentByEmployeeIn(employees);
         List<Title> titles = titleRepository.findCurrentByEmployeeIn(employees);
 
+        // Map으로 만들어서 DTO 결합하는데 사용
         Map<Integer, Integer> salaryMap = new HashMap<>();
         salaries.forEach(salary -> {
             salaryMap.put(salary.getId().getEmpNo(), salary.getSalary());

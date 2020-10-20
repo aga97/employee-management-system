@@ -1,21 +1,18 @@
-package yellowsunn.employee_management.dto;
+package yellowsunn.employee_management.dto.condition;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import yellowsunn.employee_management.entity.Gender;
 
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-public class TestDepEmpDto {
+public class EmpSearchCondition {
+
     private Integer empNo;
     private String firstName;
     private String lastName;
-    private Gender gender;
     private LocalDate birthDate;
+    private Gender gender;
     private LocalDate hireDate;
-    private String deptName;
-    private LocalDate fromDate;
-    private LocalDate toDate;
+    private String deptNo;
 }
