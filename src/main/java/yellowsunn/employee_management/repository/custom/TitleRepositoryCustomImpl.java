@@ -30,10 +30,10 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
         return queryFactory
                 .selectFrom(title)
                 .where(Expressions.list(title.employee, title.id.fromDate, title.toDate)
-                        .in(select(subTitle.employee, subTitle.id.fromDate.max(), subTitle.toDate.max())
+                        .in(select(subTitle.employee.empNo, subTitle.id.fromDate.max(), subTitle.toDate.max())
                                 .from(subTitle)
                                 .where(subTitle.employee.in(employees))
-                                .groupBy(subTitle.employee)
+                                .groupBy(subTitle.employee.empNo)
                         ), title.employee.in(employees)
                 ).fetch();
     }

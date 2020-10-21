@@ -30,10 +30,10 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
         return queryFactory
                 .selectFrom(salary)
                 .where(Expressions.list(salary.employee, salary.id.fromDate, salary.toDate)
-                        .in(select(subSalary.employee, subSalary.id.fromDate.max(), subSalary.toDate.max())
+                        .in(select(subSalary.employee.empNo, subSalary.id.fromDate.max(), subSalary.toDate.max())
                                 .from(subSalary)
                                 .where(subSalary.employee.in(employees))
-                                .groupBy(subSalary.employee)
+                                .groupBy(subSalary.employee.empNo)
                         ), salary.employee.in(employees)
                 ).fetch();
     }
