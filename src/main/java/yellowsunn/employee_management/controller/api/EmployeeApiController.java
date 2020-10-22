@@ -9,6 +9,7 @@ import yellowsunn.employee_management.dto.CurEmpInfoDto;
 import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
 import yellowsunn.employee_management.service.EmpInfoService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class EmployeeApiController {
