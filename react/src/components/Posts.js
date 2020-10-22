@@ -9,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import TrendingFlat from '@material-ui/icons/TrendingFlat';
 import { Icon } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,19 +21,22 @@ const posts = [
     {
         title: "사원 조회",
         excerpt: "사원을 조회합니다.",
-        image: "account_box"
+        image: "account_box",
+        link:"/Human"
     },
 
     {
         title: "부서 조회",
         excerpt: "부서 인원을 조회합니다.",
-        image: "account_tree"
+        image: "account_tree",
+        link:"/Department"
     },
 
     {
         title: "사원 관리",
         excerpt: "신입, 부서 이동, 퇴사 등 사원 관리 메뉴입니다.",
-        image: "add_box"
+        image: "add_box",
+        link:"/Manage"
     }
     
 ]
@@ -44,13 +48,14 @@ function Posts(props) {
         <div className={classes.root} >
             <Grid container spacing={3} direction="row" justify="center" alignItems="stretch">
                 {posts.map(post => (
-                    <Grid item xs={6} sm={3} md={12}  key={post.title}>
+                    <Grid item xs={6} sm={3} md={12}  key={post.title}>                      
                         <Card>
+                            <Link style={{textDecoration:'none', color:'black'}} to={post.link}>
                             <CardActionArea>                                                                
                                 <CardContent>
                                     <Icon fontSize="large">{post.image}</Icon>        
                                     <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                                        HMS
+                                        EMS
                                     </Typography>
                                     <Typography variant="h5" component="h2" gutterBottom>
                                         {post.title}
@@ -58,6 +63,7 @@ function Posts(props) {
                                     <Typography variant="body2" component="p">{post.excerpt}</Typography>
                                 </CardContent>
                             </CardActionArea>
+                            </Link>
                             <CardActions>
                                 <Button size="small" color="primary">
                                     메뉴로 이동 <TrendingFlat/>

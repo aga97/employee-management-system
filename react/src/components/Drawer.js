@@ -144,7 +144,7 @@ function PersistentDrawerLeft(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Human Management System
+            Employees Management System
           </Typography>
         </Toolbar>
       </AppBar>
