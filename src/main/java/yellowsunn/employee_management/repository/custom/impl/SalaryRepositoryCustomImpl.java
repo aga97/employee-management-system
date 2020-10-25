@@ -1,4 +1,4 @@
-package yellowsunn.employee_management.repository.custom;
+package yellowsunn.employee_management.repository.custom.impl;
 
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.entity.Employee;
 import yellowsunn.employee_management.entity.QSalary;
 import yellowsunn.employee_management.entity.Salary;
+import yellowsunn.employee_management.repository.custom.SalaryRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.util.Collection;

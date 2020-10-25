@@ -1,4 +1,4 @@
-package yellowsunn.employee_management.repository.custom;
+package yellowsunn.employee_management.repository.custom.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
@@ -14,6 +14,7 @@ import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
 import yellowsunn.employee_management.entity.DeptEmp;
 import yellowsunn.employee_management.entity.Gender;
 import yellowsunn.employee_management.entity.QDeptEmp;
+import yellowsunn.employee_management.repository.custom.DeptEmpRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;

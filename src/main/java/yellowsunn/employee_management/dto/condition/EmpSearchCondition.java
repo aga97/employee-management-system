@@ -6,6 +6,9 @@ import yellowsunn.employee_management.entity.Gender;
 
 import java.time.LocalDate;
 
+/**
+ * 직원 검색 조건
+ */
 @Data
 public class EmpSearchCondition {
 

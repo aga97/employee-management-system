@@ -10,7 +10,7 @@ import yellowsunn.employee_management.dto.CurEmpInfoDto;
 import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.repository.DepartmentRepository;
-import yellowsunn.employee_management.service.EmpInfoService;
+import yellowsunn.employee_management.service.EmployeeService;
 
 import java.util.List;
 
@@ -18,13 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestEmployeeController {
 
-    private final EmpInfoService empInfoService;
+    private final EmployeeService employeeService;
     private final DepartmentRepository departmentRepository;
 
     @GetMapping("/test/employees")
     public String findCurrentEmployees(EmpSearchCondition condition, Pageable pageable, Model model) {
         List<Department> departments = departmentRepository.findAll();
-        Page<CurEmpInfoDto> page = empInfoService.findCurrentEmployees(condition, pageable);
+        Page<CurEmpInfoDto> page = employeeService.findCurrentEmployees(condition, pageable);
         List<CurEmpInfoDto> content = page.getContent();
 
         model.addAttribute("content", content);
