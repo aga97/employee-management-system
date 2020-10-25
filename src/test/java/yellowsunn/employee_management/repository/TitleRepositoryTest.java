@@ -12,7 +12,9 @@ import yellowsunn.employee_management.entity.id.TitleId;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -125,5 +127,32 @@ class TitleRepositoryTest {
 
         //then
         assertThat(titleRepository.count()).isEqualTo(count - 1);
+    }
+
+    @Test
+    public void findCurrentByEmployeeIn_test() throws Exception {
+        //given
+        List<Title> findTitles = titleRepository.findAll();
+        List<Employee> employees = findTitles.stream()
+                .map(Title::getEmployee)
+                .distinct()
+                .filter(employee -> employee.getEmpNo() < 10100)
+                .collect(Collectors.toList());
+
+        //when
+        List<Title> curTitles = titleRepository.findCurrentByEmployeeIn(employees);
+
+        //then
+        List<String> collect = curTitles.stream()
+                .map(title -> title.getId().getEmpNo() + "_" + title.getId().getTitle())
+                .collect(Collectors.toList());
+
+        assertThat(collect)
+                .contains("10017_Senior Staff")
+                .contains("10042_Senior Staff")
+                .contains("10055_Staff")
+                .contains("10058_Senior Staff")
+                .doesNotContain("10042_Staff")
+                .doesNotContain("10108_Staff");
     }
 }

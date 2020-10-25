@@ -12,7 +12,9 @@ import yellowsunn.employee_management.entity.id.SalaryId;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,8 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DataJpaTest
 class SalaryRepositoryTest {
 
-    @Autowired SalaryRepository salaryRepository;
-    @Autowired TestEntityManager em;
+    @Autowired
+    SalaryRepository salaryRepository;
+    @Autowired
+    TestEntityManager em;
 
     @Test
     public void save_test() throws Exception {
@@ -122,5 +126,33 @@ class SalaryRepositoryTest {
 
         //then
         assertThat(salaryRepository.count()).isEqualTo(count - 1);
+    }
+
+    @Test
+    public void findCurrentByEmployeeIn_test() throws Exception {
+        //given
+        List<Salary> findSalaries = salaryRepository.findAll();
+        List<Employee> employees = findSalaries.stream()
+                .map(Salary::getEmployee)
+                .distinct()
+                .filter(employee -> employee.getEmpNo() < 10100)
+                .collect(Collectors.toList());
+
+        //when
+        List<Salary> curSalaries = salaryRepository.findCurrentByEmployeeIn(employees);
+
+
+        //then
+        List<String> collect = curSalaries.stream()
+                .map(salary -> salary.getId().getEmpNo() + "_" + salary.getSalary())
+                .collect(Collectors.toList());
+
+        assertThat(collect)
+                .contains("10017_99651")
+                .contains("10042_94868")
+                .contains("10055_90843")
+                .contains("10058_72542")
+                .doesNotContain("10042_95035")
+                .doesNotContain("10108_45664");
     }
 }

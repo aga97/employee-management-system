@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/test/employees}" method="get">
+    <div style="color: gray; font-size: 12px">[동적 쿼리 조건이므로 일부만 입력하거나, 아무것도 입력하지 않아도 된다 / 부서를 조건에 포함하는 경우가 가장 연산시간이 오래걸린다]</div>
+    <label for="empNo">직원번호</label>
+    <input type="number" id="empNo" name="empNo" th:value="${empNo}" placeholder="일부만 포함해도 검색됨"><br/>
+
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" name="firstName" th:value="${firstName}" placeholder="일부만 포함해도 검색됨">
+
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" name="lastName" th:value="${lastName}" placeholder="일부만 포함해도 검색됨"><br/>
+
+    <label for="gender">성별</label>
+    <select name="gender" id="gender">
+        <option value="" th:selected="${gender} == ''">설정안함</option>
+        <option value="M" th:selected="${gender} == 'M'">남성</option>
+        <option value="F" th:selected="${gender} == 'F'">여성</option>
+    </select><br/>
+
+    <label for="birthDate">생년월일</label>
+    <input type="date" id="birthDate" name="birthDate"><br/>
+
+    <label for="birthDate">부서</label>
+    <select name="deptNo" id="deptNo">
+        <option value="">설정안함</option>
+        <option th:each="department : ${departments}"
+                th:value="${department.getDeptNo()}"
+                th:selected="${department.getDeptNo()} == ${deptNo}"
+                th:text="${department.getDeptName()}"></option>
+    </select>
+    <span style="color: gray; font-size: 12px">[부서 목록은 추가될 경우도 고려해 페이지가 로딩될때마다 DB에서 불러옴]</span><br/>
+
+    <label for="hireDate">고용일</label>
+    <input type="date" id="hireDate" name="hireDate"><br/>
+    <br/>
+
+    <div style="color: gray; font-size: 12px">[페이지는 0페이지부터 시작한다 / 페이지 크기는 100의 약수 추천(기본 배치 사이즈를 100으로 할당했기 때문)]</div>
+    <label for="size">페이지 크기</label>
+    <select name="size" id="size">
+        <option value="20" th:selected="${pageSize} == 20">20</option>
+        <option value="25" th:selected="${pageSize} == 25">25</option>
+        <option value="50" th:selected="${pageSize} == 50">50</option>
+        <option value="100" th:selected="${pageSize} == 100">100</option>
+    </select><br/>
+
+    <label for="page">페이지</label>
+    <input type="number" id="page" name="page" th:value="${currentPage}" style="width: 80px"> / <span th:text="${totalPages}"></span>
+    (총 개수: <span th:text="${totalElements}"></span>)<br/>
+
+    <label for="sort">정렬</label>
+    <select name="sort" id="sort">
+        <option value="empNo" th:selected="${sort} == 'empNo' or ''">직원 번호</option>
+        <option value="empNo,desc" th:selected="${sort} == 'empNo,desc'">직원 번호 - 내림차순</option>
+        <option value="deptName" th:selected="${sort} == 'deptName'">부서 이름</option>
+        <option value="deptName,desc" th:selected="${sort} == 'deptName,desc'">부서 이름 - 내림차순</option>
+        <option value="birthDate" th:selected="${sort} == 'birthDate'">생년월일</option>
+        <option value="birthDate,desc" th:selected="${sort} == 'birthDate,desc'">생년월일 - 내림차순</option>
+        <option value="firstName" th:selected="${sort} == 'firstName'">First Name</option>
+        <option value="firstName,desc" th:selected="${sort} == 'firstName,desc'">First Name - 내림차순</option>
+        <option value="lastName" th:selected="${sort} == 'lastName'">Last Name</option>
+        <option value="lastName,desc" th:selected="${sort} == 'lastName,desc'">Last Name - 내림차순</option>
+        <option value="hireDate" th:selected="${sort} == 'hireDate'">고용일</option>
+        <option value="hireDate,desc" th:selected="${sort} == 'hireDate,desc'">고용일 - 내림차순</option>
+    </select><br/>
+
+    <button type="submit">submit</button>
+    <button type="button" onClick="location.href='employees'">reset</button>
+</form>
+<table border="1px">
+    <thead>
+        <tr>
+            <th>직원 번호</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>성별</th>
+            <th>생년월일</th>
+            <th>부서</th>
+            <th>직책</th>
+            <th>고용일</th>
+            <th>연봉</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="dto : ${content}">
+            <td th:text="${dto.getEmpNo()}"></td>
+            <td th:text="${dto.getFirstName()}"></td>
+            <td th:text="${dto.getLastName()}"></td>
+            <td th:text="${dto.getGender()}"></td>
+            <td th:text="${dto.getBirthDate()}"></td>
+            <td th:text="${dto.getDeptName()}"></td>
+            <td th:text="${dto.getTitle()}"></td>
+            <td th:text="${dto.getHireDate()}"></td>
+            <td th:text="'$' + ${dto.getSalary()}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
