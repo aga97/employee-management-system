@@ -8,9 +8,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import { Button, Container, CircularProgress } from '@material-ui/core';
+import { Container, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import * as actions from '../actions';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -31,42 +32,24 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
   },
   progress: {
-    width: '100%',  
-    '& > * + *': {
-      marginTop: theme.spacing(10),
-    },
-    marginTop: theme.spacing(30),
+    marginTop: theme.spacing(25), 
   }
 }));
-
-const empDatas = {
-  params:{
-    empNo: '',
-    firstName: '',
-    lastName: '',
-    gender: '',
-    birthDate: '',
-    depNo: '',
-    hireDate: '',
-    size: 10,
-    page: 0,
-    sort: 'empNo',
-  }, 
-}
 
 
 export default function Human() {
 
-  const [search, setSearch] = useState(empDatas);
-  
+  const dispatch = useDispatch();
+
+  const { search } = useSelector((state) => ({
+    search: state.changeSearch,
+  }))
 
   const [datas, setDatas ] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [first, setFirst] = useState(null);
   const classes = useStyles();
-
   
   useEffect(() => {
     let unmounted = false;
@@ -90,42 +73,25 @@ export default function Human() {
     
   },[search])
 
-  const onChange = (e) => {
-    setFirst(e.target.value);
-  };
-
-  const onClick = (e) => {      
-    setSearch((prevState) => ({      
-      params:{
-        ...prevState.params,
-        firstName:first
-      }
-    }))
-    setFirst('');
-  }
-
   const handleChangePage = (event, newPage) => {
-    setSearch((prevState) => ({      
-      params:{
-        ...prevState.params,
-        page:newPage}
-    }));
+    dispatch(actions.changeSearch({
+      ...search.params,
+      page : newPage,
+    }))
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setSearch((prevState) => ({
-      
-      params:{
-        ...prevState.params,
-        size:parseInt(event.target.value,10),
-        page:0}
-    }));
+    dispatch(actions.changeSearch({
+      ...search.params,
+      size: parseInt(event.target.value, 10),
+      page:0,
+    }))
   };
 
   if(loading) {
       return(
-      <div className={classes.progress}>
-        <CircularProgress color="secondary" size={100} />        
+      <div >
+        <CircularProgress className={classes.progress}  color="secondary" size={100}/>        
       </div>
     )
   }
@@ -136,6 +102,17 @@ export default function Human() {
 
   return (
     <div>
+    <Container>     
+      <TablePagination
+      rowsPerPageOptions={[10, 25, 50, 100]}          
+      component="div"      
+      count={datas.totalElements}  
+      rowsPerPage={search.params.size}
+      page={search.params.page}
+      onChangePage={handleChangePage} 
+      onChangeRowsPerPage={handleChangeRowsPerPage}         
+        />    
+    </Container>    
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
@@ -170,26 +147,7 @@ export default function Human() {
         </TableBody>
       </Table>
     </TableContainer>
-    <TablePagination
-      rowsPerPageOptions={[10, 25, 50, 100]}          
-      component="div"      
-      count={datas.totalPages}   
-      rowsPerPage={search.params.size}
-      page={search.params.page}
-      onChangePage={handleChangePage} 
-      onChangeRowsPerPage={handleChangeRowsPerPage}         
-        />
-    <Container>
-      <div className={classes.search} noValidate autoComplete='off'>        
-      <TextField id="outlined-search" label="Search field" type="search" variant="filled" size="small" defaultValue={search.params.firstName}
-      onChange={onChange} onKeyPress={e=>{
-        if(e.key==='Enter'){
-          onClick();
-        }
-      }}/>
-      <Button onClick={onClick} variant="contained" size="large" >Search</Button>     
-      </div>
-    </Container>    
+    
    </div>
   );
 }

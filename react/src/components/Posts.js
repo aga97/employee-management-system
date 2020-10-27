@@ -22,7 +22,7 @@ const posts = [
         title: "사원 조회",
         excerpt: "사원을 조회합니다.",
         image: "account_box",
-        link:"/Human"
+        link:"/SearchHuman"
     },
 
     {

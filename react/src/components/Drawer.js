@@ -16,7 +16,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Accessibility, AccountTree, AddBox, Home } from '@material-ui/icons';
 import { Link, Route } from 'react-router-dom';
 import { Hidden } from '@material-ui/core';
-import Human from './Human';
+import SearchHuman from './SearchHuman';
 import HomeP from './Home';
 import Department from './Department';
 import Manage from './Manage';
@@ -89,7 +89,7 @@ function PersistentDrawerLeft(props) {
             </ListItem>  
 
             <ListItem 
-            component={Link} to={'/Human'}
+            component={Link} to={'/SearchHuman'}
             button
             selected={selectedIndex === 1}
             onClick={(event) => handleListItemClick(event, 1)}
@@ -183,7 +183,7 @@ function PersistentDrawerLeft(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Route exact path="/" component={HomeP} />
-        <Route path="/Human" component={Human} />         
+        <Route path="/SearchHuman" component={SearchHuman} />         
         <Route path="/Home" component={HomeP} />         
         <Route path="/Department" component={Department} />  
         <Route path="/Manage" component={Manage} />          
