@@ -57,7 +57,7 @@ export default function Human() {
       try {           
         setDatas(null);
         setLoading(true);        
-        const res = await axios.get('http://localhost:8080/employees', search)
+        const res = await axios.get('http://localhost:8080/api/employees', search)
         if(!unmounted)
           setDatas(res.data);           
       } catch (e) {        
