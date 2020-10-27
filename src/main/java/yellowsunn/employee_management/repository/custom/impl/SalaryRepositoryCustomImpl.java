@@ -3,6 +3,7 @@ package yellowsunn.employee_management.repository.custom.impl;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.transaction.annotation.Transactional;
+import yellowsunn.employee_management.dto.DeptDto;
 import yellowsunn.employee_management.entity.Employee;
 import yellowsunn.employee_management.entity.QSalary;
 import yellowsunn.employee_management.entity.Salary;
@@ -37,5 +38,10 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
                                 .groupBy(subSalary.employee.empNo)
                         ), salary.employee.in(employees)
                 ).fetch();
+    }
+
+    @Override
+    public List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo) {
+        return null;
     }
 }

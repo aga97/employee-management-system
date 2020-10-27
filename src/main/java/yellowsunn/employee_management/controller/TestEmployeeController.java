@@ -6,8 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import yellowsunn.employee_management.dto.CurEmpInfoDto;
-import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
+import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.repository.DepartmentRepository;
 import yellowsunn.employee_management.service.EmployeeService;
@@ -22,10 +21,10 @@ public class TestEmployeeController {
     private final DepartmentRepository departmentRepository;
 
     @GetMapping("/test/employees")
-    public String findCurrentEmployees(EmpSearchCondition condition, Pageable pageable, Model model) {
+    public String findCurrentEmployees(EmpSearchDto.Condition condition, Pageable pageable, Model model) {
         List<Department> departments = departmentRepository.findAll();
-        Page<CurEmpInfoDto> page = employeeService.findCurrentEmployees(condition, pageable);
-        List<CurEmpInfoDto> content = page.getContent();
+        Page<EmpSearchDto.Info> page = employeeService.findSearchInfoByCondition(condition, pageable);
+        List<EmpSearchDto.Info> content = page.getContent();
 
         model.addAttribute("content", content);
         model.addAttribute("departments", departments);

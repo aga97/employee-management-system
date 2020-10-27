@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import yellowsunn.employee_management.dto.DepartmentsDto;
+import yellowsunn.employee_management.dto.DeptDto;
 import yellowsunn.employee_management.service.DepartmentService;
 
 @CrossOrigin(origins = "*")
@@ -31,7 +32,12 @@ public class DepartmentApiController {
      * </pre>
      */
     @GetMapping("/api/departments")
-    public DepartmentsDto findDepartments(Sort sort) {
+    public DeptDto.All findDepartments(Sort sort) {
         return departmentService.findAll(sort);
+    }
+
+    @GetMapping("/api/departments/{deptNo}")
+    public DeptDto.Info findDepartmentInfo(@PathVariable("deptNo") String deptNo) {
+        return departmentService.findInfoByDeptNo(deptNo);
     }
 }
