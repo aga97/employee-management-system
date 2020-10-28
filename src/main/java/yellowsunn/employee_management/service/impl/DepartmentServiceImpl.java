@@ -36,6 +36,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public DeptDto.Info findInfoByDeptNo(String deptNo) {
+        // 부서 이름
+        String deptName = departmentRepository.findById(deptNo)
+                .map(Department::getDeptName).orElse(null);
+
         // 부서 총 인원
         long size = deptEmpRepository.countCurrentByDeptNo(deptNo);
 
@@ -60,6 +64,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                         .toDate(dm.getToDate()).build()).collect(Collectors.toList());
 
         return DeptDto.Info.builder()
+                .deptName(deptName)
                 .size(size)
                 .deptManager(deptManager)
                 .fromDate(fromDate)

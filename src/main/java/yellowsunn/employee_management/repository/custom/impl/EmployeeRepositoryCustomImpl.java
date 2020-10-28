@@ -3,6 +3,7 @@ package yellowsunn.employee_management.repository.custom.impl;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import yellowsunn.employee_management.dto.DeptDto;
+import yellowsunn.employee_management.entity.Gender;
 import yellowsunn.employee_management.repository.custom.EmployeeRepositoryCustom;
 
 import javax.persistence.EntityManager;
@@ -34,6 +35,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
                                         deptEmp.toDate.eq(LocalDate.of(9999, 1, 1)))
                         )
                 ).groupBy(employee.gender)
+                .orderBy(employee.gender.asc())
                 .fetch();
 
         List<DeptDto.GenderInfo> genderInfoList = new ArrayList<>();

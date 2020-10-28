@@ -29,6 +29,7 @@ public class DeptDto {
     @Data
     @Builder
     public static class Info {
+        private String deptName;
         private long size;
         private String deptManager;
         private LocalDate fromDate; // 부임일
