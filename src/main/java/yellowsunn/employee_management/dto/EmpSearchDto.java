@@ -1,16 +1,23 @@
 package yellowsunn.employee_management.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import yellowsunn.employee_management.entity.Gender;
 
 import java.time.LocalDate;
 
+/**
+ * 직원 목록 조회 dto
+ */
 public class EmpSearchDto {
 
+    /**
+     * 직원 목록 조회에 사용하는 dto
+     */
     @Data
-    @AllArgsConstructor
+    @Builder
     public static class Info {
         private Integer empNo;
         private String firstName;
@@ -23,6 +30,9 @@ public class EmpSearchDto {
         private Integer Salary;
     }
 
+    /**
+     * 검색 및 정렬 조건
+     */
     @Data
     public static class Condition {
         private Integer empNo;

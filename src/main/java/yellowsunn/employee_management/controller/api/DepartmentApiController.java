@@ -17,7 +17,7 @@ public class DepartmentApiController {
     private final DepartmentService departmentService;
 
     /**
-     * 전체 부서 정보를 반환한다.
+     * 전체 부서 목록을 반환한다.
      * <p>deptNo, detName으로 정렬 가능</p>
      *
      * <pre>
@@ -36,6 +36,15 @@ public class DepartmentApiController {
         return departmentService.findAll(sort);
     }
 
+    /**
+     * 부서별 부서 정보를 반환한다. <br/>
+     * 부서 조회에는 deptNo 사용
+     * <pre>
+     * Example: Marketing(d001) 부서 조회
+     *
+     * localhost:8080/api/departments/d001
+     * </pre>
+     */
     @GetMapping("/api/departments/{deptNo}")
     public DeptDto.Info findDepartmentInfo(@PathVariable("deptNo") String deptNo) {
         return departmentService.findInfoByDeptNo(deptNo);

@@ -12,5 +12,8 @@ public interface DeptEmpRepositoryCustom {
      */
     Page<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable);
 
+    /**
+     * 부서별 현직 직원들의 총인원를 구한다.
+     */
     long countCurrentByDeptNo(String deptNo);
 }

@@ -56,9 +56,17 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(deptEmp -> {
                     Employee employee = deptEmp.getEmployee();
                     Department department = deptEmp.getDepartment();
-                    return new EmpSearchDto.Info(employee.getEmpNo(), employee.getFirstName(), employee.getLastName(), employee.getBirthDate(),
-                            employee.getGender(), employee.getHireDate(), department.getDeptName(),
-                            titleMap.get(employee.getEmpNo()), salaryMap.get(employee.getEmpNo()));
+                    return EmpSearchDto.Info.builder()
+                            .empNo(employee.getEmpNo())
+                            .firstName(employee.getFirstName())
+                            .lastName(employee.getLastName())
+                            .birthDate(employee.getBirthDate())
+                            .gender(employee.getGender())
+                            .hireDate(employee.getHireDate())
+                            .deptName(department.getDeptName())
+                            .title(titleMap.get(employee.getEmpNo()))
+                            .Salary(salaryMap.get(employee.getEmpNo()))
+                            .build();
                 }).collect(Collectors.toList());
 
         return new PageImpl<>(content, pageable, deptEmpPage.getTotalElements());

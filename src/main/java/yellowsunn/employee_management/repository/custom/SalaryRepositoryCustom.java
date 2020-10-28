@@ -14,5 +14,8 @@ public interface SalaryRepositoryCustom {
      */
     List<Salary> findCurrentByEmployeeIn(Collection<Employee> employees);
 
+    /**
+     * 부서별 현직 직원들의 직책별 연봉 정보를 반환한다.
+     */
     List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo);
 }

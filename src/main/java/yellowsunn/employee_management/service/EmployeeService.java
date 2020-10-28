@@ -7,7 +7,7 @@ import yellowsunn.employee_management.dto.EmpSearchDto;
 public interface EmployeeService {
 
     /**
-     * 주어진 조건에 맞는 가장 최근 직원 정보들을 CurEmpInfoDto로 매핑해 Page로 반환
+     * 주어진 조건에 맞는 직원 검색 정보를 가져온다.
      */
     Page<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable);
 }

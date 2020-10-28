@@ -86,7 +86,11 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     @Override
     public long countCurrentByDeptNo(String deptNo) {
-        return 0;
+        return queryFactory
+                .selectFrom(deptEmp)
+                .where(deptEmp.department.deptNo.eq(deptNo),
+                        deptEmp.toDate.eq(LocalDate.of(9999, 1, 1)))
+                .fetchCount();
     }
 
     /**

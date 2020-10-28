@@ -1,19 +1,22 @@
 package yellowsunn.employee_management.repository.custom.impl;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.dto.DeptDto;
-import yellowsunn.employee_management.entity.Employee;
-import yellowsunn.employee_management.entity.QSalary;
-import yellowsunn.employee_management.entity.Salary;
+import yellowsunn.employee_management.entity.*;
 import yellowsunn.employee_management.repository.custom.SalaryRepositoryCustom;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static com.querydsl.jpa.JPAExpressions.select;
+import static yellowsunn.employee_management.entity.QDeptEmp.*;
+import static yellowsunn.employee_management.entity.QTitle.title;
 
 public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
 
@@ -42,6 +45,48 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
 
     @Override
     public List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo) {
-        return null;
+        // 재직 중임을 나타낸다.
+        LocalDate inService = LocalDate.of(9999, 1, 1);
+        QSalary salary = new QSalary("salary");
+
+        List<Tuple> tuples = queryFactory
+                .select(
+                        select(title.id.title)
+                                .from(title)
+                                .where(salary.employee.empNo.eq(title.employee.empNo),
+                                        title.toDate.eq(inService)),
+                        salary.salary.avg(),
+                        salary.count(),
+                        salary.salary.min(),
+                        salary.salary.max()
+                ).from(salary)
+                .where(salary.employee.empNo.in(
+                        select(deptEmp.employee.empNo)
+                                .from(deptEmp)
+                                .where(deptEmp.department.deptNo.eq(deptNo),
+                                        deptEmp.toDate.eq(inService)
+                                )
+                        ),
+                        salary.toDate.eq(inService)
+                ).groupBy(Expressions.ONE)
+                .orderBy(Expressions.TWO.desc())
+                .fetch();
+
+        List<DeptDto.SalaryInfo> salaryInfoList = new ArrayList<>();
+        tuples.forEach(tuple -> {
+            Long size = tuple.get(salary.count());
+            if (size != null) {
+                salaryInfoList.add(DeptDto.SalaryInfo.builder()
+                        .title(tuple.get(0, String.class))
+                        .minSalary(tuple.get(salary.salary.min()))
+                        .maxSalary(tuple.get(salary.salary.max()))
+                        .avgSalary(tuple.get(salary.salary.avg()))
+                        .size(size)
+                        .build()
+                );
+            }
+        });
+
+        return salaryInfoList;
     }
 }
