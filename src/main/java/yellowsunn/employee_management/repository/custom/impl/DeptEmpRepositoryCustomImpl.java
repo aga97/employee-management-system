@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
+import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.DeptEmp;
 import yellowsunn.employee_management.entity.Gender;
 import yellowsunn.employee_management.entity.QDeptEmp;
@@ -35,7 +35,7 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<DeptEmp> findCurrentByCondition(EmpSearchCondition condition, Pageable pageable) {
+    public Page<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
         QDeptEmp subDe = new QDeptEmp("subDe");
 
         JPAQuery<DeptEmp> query = queryFactory
@@ -82,6 +82,15 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         }
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public long countCurrentByDeptNo(String deptNo) {
+        return queryFactory
+                .selectFrom(deptEmp)
+                .where(deptEmp.department.deptNo.eq(deptNo),
+                        deptEmp.toDate.eq(LocalDate.of(9999, 1, 1)))
+                .fetchCount();
     }
 
     /**

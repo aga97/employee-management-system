@@ -1,18 +1,17 @@
-package yellowsunn.employee_management.controller.api;
+package yellowsunn.employee_management.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 import yellowsunn.employee_management.dto.DeptDto;
 import yellowsunn.employee_management.service.DepartmentService;
 
-@CrossOrigin(origins = "*")
-@RestController
+@Controller
 @RequiredArgsConstructor
-public class DepartmentApiController {
+public class TestDepartmentApiController {
 
     private final DepartmentService departmentService;
 
@@ -31,9 +30,11 @@ public class DepartmentApiController {
      * localhost:8080/api/departments?sort=deptName,desc
      * </pre>
      */
-    @GetMapping("/api/departments")
-    public DeptDto.All findDepartments(Sort sort) {
-        return departmentService.findAll(sort);
+    @GetMapping("/test/departments")
+    public String findDepartments(Sort sort, Model model) {
+        DeptDto.All all = departmentService.findAll(sort);
+        model.addAttribute("departments", all);
+        return "testDepartments";
     }
 
     /**
@@ -45,8 +46,10 @@ public class DepartmentApiController {
      * localhost:8080/api/departments/d001
      * </pre>
      */
-    @GetMapping("/api/departments/{deptNo}")
-    public DeptDto.Info findDepartmentInfo(@PathVariable("deptNo") String deptNo) {
-        return departmentService.findInfoByDeptNo(deptNo);
+    @GetMapping("/test/departments/{deptNo}")
+    public String findDepartmentInfo(@PathVariable("deptNo") String deptNo, Model model) {
+        DeptDto.Info info = departmentService.findInfoByDeptNo(deptNo);
+        model.addAttribute("info", info);
+        return "testDeptInfo";
     }
 }

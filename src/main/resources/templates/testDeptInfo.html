@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h4 th:text="|부서 이름: ${info.getDeptName()}|"></h4>
+<h4 th:text="|부서 총 인원: ${info.getSize()}|"></h4>
+<h4 th:text="|부서장: ${info.getDeptManager()} (부임일: ${info.getFromDate()})|"></h4>
+<h4>직책별 연봉: </h4>
+<table border="1px">
+    <thead>
+    <tr>
+        <th>직책</th>
+        <th>평균 연봉</th>
+        <th>최저 연봉</th>
+        <th>최고 연봉</th>
+        <th>인원</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="salaryInfo : ${info.getSalaryInfo()}">
+        <td th:text="${salaryInfo.getTitle()}" style="text-align: left"/>
+        <td th:text="${salaryInfo.getAvgSalary()}" style="text-align: right"/>
+        <td th:text="${salaryInfo.getMinSalary()}" style="text-align: right"/>
+        <td th:text="${salaryInfo.getMaxSalary()}" style="text-align: right"/>
+        <td th:text="${salaryInfo.getSize()}" style="text-align: right"/>
+    </tr>
+    </tbody>
+</table>
+<h4 th:text="|성별: ${info.getGenderInfo().get(0).getGender()} = ${info.getGenderInfo().get(0).getSize()}명,
+    ${info.getGenderInfo().get(1).getGender()} = ${info.getGenderInfo().get(1).getSize()}명|"/>
+
+<h4>역대 부서장 정보:</h4>
+<table border="1px">
+    <thead>
+    <tr>
+        <th>이름</th>
+        <th>재임 기간</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="history : ${info.getDeptManagerHistory()}">
+        <td th:text="${history.getDeptManager()}"/>
+        <td th:text="|${history.getFromDate()} ~ ${history.getToDate()}|"/>
+    </tr>
+    </tbody>
+</table>
+</span>
+</body>
+</html>

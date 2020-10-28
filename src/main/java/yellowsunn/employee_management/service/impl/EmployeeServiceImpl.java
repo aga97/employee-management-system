@@ -5,15 +5,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import yellowsunn.employee_management.dto.CurEmpInfoDto;
-import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
+import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.*;
 import yellowsunn.employee_management.repository.DeptEmpRepository;
 import yellowsunn.employee_management.repository.SalaryRepository;
 import yellowsunn.employee_management.repository.TitleRepository;
 import yellowsunn.employee_management.service.EmployeeService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 가져온 Employee 객체들로 다시 Salary와 Title 객체들을 가져와서 Map형식으로 만든 다음 DTO로 조합하였다.
      */
     @Override
-    public Page<CurEmpInfoDto> findCurrentEmployees(EmpSearchCondition condition, Pageable pageable) {
+    public Page<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
         Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentByCondition(condition, pageable);
         List<DeptEmp> deptEmps = deptEmpPage.getContent();
         List<Employee> employees = deptEmps.stream()
@@ -51,13 +52,21 @@ public class EmployeeServiceImpl implements EmployeeService {
             titleMap.put(title.getId().getEmpNo(), title.getId().getTitle());
         });
 
-        List<CurEmpInfoDto> content = deptEmps.stream()
+        List<EmpSearchDto.Info> content = deptEmps.stream()
                 .map(deptEmp -> {
                     Employee employee = deptEmp.getEmployee();
                     Department department = deptEmp.getDepartment();
-                    return new CurEmpInfoDto(employee.getEmpNo(), employee.getFirstName(), employee.getLastName(), employee.getBirthDate(),
-                            employee.getGender(), employee.getHireDate(), department.getDeptName(),
-                            titleMap.get(employee.getEmpNo()), salaryMap.get(employee.getEmpNo()));
+                    return EmpSearchDto.Info.builder()
+                            .empNo(employee.getEmpNo())
+                            .firstName(employee.getFirstName())
+                            .lastName(employee.getLastName())
+                            .birthDate(employee.getBirthDate())
+                            .gender(employee.getGender())
+                            .hireDate(employee.getHireDate())
+                            .deptName(department.getDeptName())
+                            .title(titleMap.get(employee.getEmpNo()))
+                            .Salary(salaryMap.get(employee.getEmpNo()))
+                            .build();
                 }).collect(Collectors.toList());
 
         return new PageImpl<>(content, pageable, deptEmpPage.getTotalElements());
