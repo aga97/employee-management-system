@@ -2,7 +2,7 @@ package yellowsunn.employee_management.repository.custom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
+import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.DeptEmp;
 
 public interface DeptEmpRepositoryCustom {
@@ -10,5 +10,10 @@ public interface DeptEmpRepositoryCustom {
     /**
      * 주어진 조건에서 직원들의 가장 최근 DeptEmp 를 반환한다.
      */
-    Page<DeptEmp> findCurrentByCondition(EmpSearchCondition condition, Pageable pageable);
+    Page<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable);
+
+    /**
+     * 부서별 현직 직원들의 총인원를 구한다.
+     */
+    long countCurrentByDeptNo(String deptNo);
 }

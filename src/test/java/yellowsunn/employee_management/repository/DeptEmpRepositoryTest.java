@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
-import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
+import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.entity.DeptEmp;
 import yellowsunn.employee_management.entity.Employee;
@@ -137,7 +137,7 @@ class DeptEmpRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(Sort.Direction.ASC, "emp_no"));
 
         //when
-        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentByCondition(new EmpSearchCondition(), pageRequest);
+        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentByCondition(new EmpSearchDto.Condition(), pageRequest);
         List<DeptEmp> content = deptEmpPage.getContent();
 
         //then

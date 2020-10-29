@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table border="1px">
+    <caption>부서 조회</caption>
+    <tr th:each="d, i : ${departments.getContent()}" th:if="${i.odd}">
+        <td>
+            <a th:href="@{/test/departments/{deptNo}(deptNo = ${departments.getContent().get(i.index).getDeptNo()})}"
+               th:text="${departments.getContent().get(i.index).getDeptName()}"/>
+        </td>
+        <td th:if="!${i.last}">
+            <a th:href="@{/test/departments/{deptNo}(deptNo = ${departments.getContent().get(i.index + 1).getDeptNo()})}"
+               th:text="${departments.getContent().get(i.index + 1).getDeptName()}"/>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

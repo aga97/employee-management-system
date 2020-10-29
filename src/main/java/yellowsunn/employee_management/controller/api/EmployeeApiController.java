@@ -3,11 +3,10 @@ package yellowsunn.employee_management.controller.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import yellowsunn.employee_management.dto.CurEmpInfoDto;
-import yellowsunn.employee_management.dto.condition.EmpSearchCondition;
+import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.service.EmployeeService;
 
 @CrossOrigin(origins = "*")
@@ -18,8 +17,8 @@ public class EmployeeApiController {
     private final EmployeeService employeeService;
 
     /**
-     * 주어진 조건에 맞는 가장 최근 직원 정보들을 반환한다.
-     * <p>조건은 {@link EmpSearchCondition} 의 필드로 결정되며 해당 필드로 정렬을 수행할 수도 있다.</p>
+     * 주어진 조건에 맞는 직원 정보 반환한다.
+     * <p>조건은 {@link EmpSearchDto.Condition} 의 필드로 결정되며 해당 필드로 정렬을 수행할 수도 있다.</p>
      * <pre>
      * Example1: 조건 없음
      *
@@ -37,7 +36,7 @@ public class EmployeeApiController {
      * </pre>
      */
     @GetMapping("/api/employees")
-    public Page<CurEmpInfoDto> findCurrentEmployees(EmpSearchCondition condition, Pageable pageable) {
-        return employeeService.findCurrentEmployees(condition, pageable);
+    public Page<EmpSearchDto.Info> findEmployees(EmpSearchDto.Condition condition, Pageable pageable) {
+        return employeeService.findSearchInfoByCondition(condition, pageable);
     }
 }
