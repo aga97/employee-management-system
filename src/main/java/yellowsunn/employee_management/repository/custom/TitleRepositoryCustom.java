@@ -17,4 +17,9 @@ public interface TitleRepositoryCustom {
      * 주어진 현직 직원들의 현재 Title 를 반환한다.
      */
     List<Title> findCurrentByEmployeeIn(Collection<Employee> employees);
+
+    /**
+     * 모든 직책 목록을 반환한다.
+     */
+    List<String> findTitles();
 }

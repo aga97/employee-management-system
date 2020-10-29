@@ -5,7 +5,9 @@ import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import yellowsunn.employee_management.dto.EmpSearchDto;
@@ -34,6 +36,8 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     @Override
     public Slice<DeptEmp> findByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+
         QDeptEmp subDe = new QDeptEmp("subDe");
 
         JPAQuery<DeptEmp> query = queryFactory
@@ -56,30 +60,14 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                                 )
                 )
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
-
+                .limit(pageSize + 1);
         orderBy(query, pageable);
 
         List<DeptEmp> content = query.fetch();
 
-        long total;
+        boolean hasNext = pageable.isPaged() && content.size() > pageSize;
 
-        if (StringUtils.isEmpty(condition.getDeptNo())) {
-            total = queryFactory
-                    .selectFrom(employee)
-                    .where(
-                            empNoStartsWith(condition.getEmpNo()),
-                            firstNameStartsWith(condition.getFirstName()),
-                            lastNameStartsWith(condition.getLastName()),
-                            genderEq(condition.getGender()),
-                            birthDateEq(condition.getBirthDate()),
-                            hireDateEq(condition.getHireDate())
-                    ).fetchCount();
-        } else {
-            total = query.fetchCount();
-        }
-
-        return new PageImpl<>(content, pageable, total);
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     @Override

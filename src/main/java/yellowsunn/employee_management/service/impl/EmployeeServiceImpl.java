@@ -32,14 +32,14 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public Slice<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
-        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findCurrentByCondition(condition, pageable);
+        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findByCondition(condition, pageable);
         List<DeptEmp> deptEmps = deptEmpSlice.getContent();
         List<Employee> employees = deptEmps.stream()
                 .map(DeptEmp::getEmployee)
                 .collect(Collectors.toList());
 
-        List<Salary> salaries = salaryRepository.findCurrentByEmployeeIn(employees);
-        List<Title> titles = titleRepository.findCurrentByEmployeeIn(employees);
+        List<Salary> salaries = salaryRepository.findLatestByEmployeeIn(employees);
+        List<Title> titles = titleRepository.findLatestByEmployeeIn(employees);
 
         // Map으로 만들어서 DTO 결합하는데 사용
         Map<Integer, Integer> salaryMap = new HashMap<>();

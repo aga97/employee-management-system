@@ -48,4 +48,13 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
                         title.employee.in(employees)
                 ).fetch();
     }
+
+    @Override
+    public List<String> findTitles() {
+        return queryFactory
+                .select(title.id.title)
+                .from(title)
+                .groupBy(title.id.title)
+                .fetch();
+    }
 }
