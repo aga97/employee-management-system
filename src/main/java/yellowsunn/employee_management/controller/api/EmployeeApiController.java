@@ -3,6 +3,7 @@ package yellowsunn.employee_management.controller.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +37,7 @@ public class EmployeeApiController {
      * </pre>
      */
     @GetMapping("/api/employees")
-    public Page<EmpSearchDto.Info> findEmployees(EmpSearchDto.Condition condition, Pageable pageable) {
+    public Slice<EmpSearchDto.Info> findEmployees(EmpSearchDto.Condition condition, Pageable pageable) {
         return employeeService.findSearchInfoByCondition(condition, pageable);
     }
 }

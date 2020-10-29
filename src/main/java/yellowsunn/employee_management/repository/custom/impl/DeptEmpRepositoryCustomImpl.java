@@ -5,9 +5,7 @@ import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import yellowsunn.employee_management.dto.EmpSearchDto;
@@ -25,6 +23,7 @@ import static yellowsunn.employee_management.entity.QDepartment.department;
 import static yellowsunn.employee_management.entity.QDeptEmp.deptEmp;
 import static yellowsunn.employee_management.entity.QEmployee.employee;
 
+@Transactional(readOnly = true)
 public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -34,8 +33,7 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
+    public Slice<DeptEmp> findByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
         QDeptEmp subDe = new QDeptEmp("subDe");
 
         JPAQuery<DeptEmp> query = queryFactory
@@ -82,6 +80,36 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         }
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Slice<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+
+        JPAQuery<DeptEmp> query = queryFactory
+                .selectFrom(deptEmp)
+                .join(deptEmp.employee, employee).fetchJoin()
+                .join(deptEmp.department, department).fetchJoin()
+                .where(
+                        deptEmp.toDate.eq(LocalDate.of(9999, 1, 1)),
+
+                        empNoStartsWith(condition.getEmpNo()),
+                        firstNameStartsWith(condition.getFirstName()),
+                        lastNameStartsWith(condition.getLastName()),
+                        deptNoEq(condition.getDeptNo()),
+                        genderEq(condition.getGender()),
+                        birthDateEq(condition.getBirthDate()),
+                        hireDateEq(condition.getHireDate())
+                )
+                .offset(pageable.getOffset())
+                .limit(pageSize + 1);
+        orderBy(query, pageable);
+
+        List<DeptEmp> content = query.fetch();
+
+        boolean hasNext = pageable.isPaged() && content.size() > pageSize;
+
+        return new SliceImpl<>(hasNext ? content.subList(0, pageSize) : content, pageable, hasNext);
     }
 
     @Override

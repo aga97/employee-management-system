@@ -9,12 +9,14 @@ import yellowsunn.employee_management.entity.Title;
 import yellowsunn.employee_management.repository.custom.TitleRepositoryCustom;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 import static com.querydsl.jpa.JPAExpressions.select;
 import static yellowsunn.employee_management.entity.QTitle.title;
 
+@Transactional(readOnly = true)
 public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -24,8 +26,7 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Title> findCurrentByEmployeeIn(Collection<Employee> employees) {
+    public List<Title> findLatestByEmployeeIn(Collection<Employee> employees) {
         QTitle subTitle = new QTitle("subTitle");
 
         return queryFactory
@@ -36,6 +37,15 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
                                 .where(subTitle.employee.in(employees))
                                 .groupBy(subTitle.employee.empNo)
                         ), title.employee.in(employees)
+                ).fetch();
+    }
+
+    @Override
+    public List<Title> findCurrentByEmployeeIn(Collection<Employee> employees) {
+        return queryFactory
+                .selectFrom(title)
+                .where(title.toDate.eq(LocalDate.of(9999, 1, 1)),
+                        title.employee.in(employees)
                 ).fetch();
     }
 }

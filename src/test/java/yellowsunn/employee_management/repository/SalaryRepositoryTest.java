@@ -139,7 +139,7 @@ class SalaryRepositoryTest {
                 .collect(Collectors.toList());
 
         //when
-        List<Salary> curSalaries = salaryRepository.findCurrentByEmployeeIn(employees);
+        List<Salary> curSalaries = salaryRepository.findLatestByEmployeeIn(employees);
 
 
         //then

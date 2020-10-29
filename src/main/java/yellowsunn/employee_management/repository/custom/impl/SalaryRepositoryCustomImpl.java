@@ -18,6 +18,7 @@ import static com.querydsl.jpa.JPAExpressions.select;
 import static yellowsunn.employee_management.entity.QDeptEmp.*;
 import static yellowsunn.employee_management.entity.QTitle.title;
 
+@Transactional(readOnly = true)
 public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -27,8 +28,7 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Salary> findCurrentByEmployeeIn(Collection<Employee> employees) {
+    public List<Salary> findLatestByEmployeeIn(Collection<Employee> employees) {
         QSalary salary = new QSalary("salary");
         QSalary subSalary = new QSalary("subSalary");
 
@@ -44,6 +44,18 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     }
 
     @Override
+    public List<Salary> findCurrentByEmployeeIn(Collection<Employee> employees) {
+        QSalary salary = new QSalary("salary");
+
+        return queryFactory
+                .selectFrom(salary)
+                .where(salary.toDate.eq(LocalDate.of(9999, 1, 1)),
+                        salary.employee.in(employees)
+                ).fetch();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo) {
         // 재직 중임을 나타낸다.
         LocalDate inService = LocalDate.of(9999, 1, 1);
