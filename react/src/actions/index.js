@@ -1,6 +1,7 @@
 export const SUBMIT = 'SUBMIT';
 export const INIT = 'INIT';
 export const CHANGESEARCH = 'CHANGESEARCH';
+export const NAVIGATION = 'NAVIGATION';
 
 export const submit = () => {
     return {
@@ -19,6 +20,13 @@ export const changeSearch = (params) => {
         type: CHANGESEARCH,
         params,
         
+    }
+}
+
+export const navigation = (index) => {
+    return {
+        type: NAVIGATION,     
+        index: index,   
     }
 }
 

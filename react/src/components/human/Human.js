@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import { Container, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 
 const useStyles = makeStyles((theme) => ({
   table: {

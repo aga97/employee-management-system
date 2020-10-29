@@ -16,10 +16,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Accessibility, AccountTree, AddBox, Home } from '@material-ui/icons';
 import { Link, Route } from 'react-router-dom';
 import { Hidden } from '@material-ui/core';
-import SearchHuman from './SearchHuman';
-import HomeP from './Home';
-import Department from './Department';
-import Manage from './Manage';
+import SearchHuman from './human/SearchHuman';
+import HomeP from './home/Home';
+import Department from './department/Department';
+import Manage from './manage/Manage';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -61,14 +62,13 @@ function PersistentDrawerLeft(props) {
     const classes = useStyles();
     const theme = useTheme();
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+    const { index } = useSelector((state) => ({
+      index : state.navigation,
+    }))
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
-    };
-
-    const handleListItemClick = (event, index) => {
-        setSelectedIndex(index);
     };
 
     const drawer = (
@@ -79,8 +79,7 @@ function PersistentDrawerLeft(props) {
             <ListItem 
             component={Link} to={'/'}
             button
-            selected={selectedIndex === 0}
-            onClick={(event) => handleListItemClick(event, 0)}
+            selected={index === 0}
             >
                 <ListItemIcon color='primary.main'>
                     <Home/>
@@ -91,8 +90,7 @@ function PersistentDrawerLeft(props) {
             <ListItem 
             component={Link} to={'/SearchHuman'}
             button
-            selected={selectedIndex === 1}
-            onClick={(event) => handleListItemClick(event, 1)}
+            selected={index === 1}
             >
                 <ListItemIcon color='primary.main'>
                     <Accessibility/>
@@ -103,8 +101,8 @@ function PersistentDrawerLeft(props) {
             <ListItem 
             component={Link} to={'/Department'}
             button
-            selected={selectedIndex === 2}
-            onClick={(event) => handleListItemClick(event, 2)}>
+            selected={index === 2}
+            >
                 <ListItemIcon>
                     <AccountTree/>
                 </ListItemIcon>
@@ -114,8 +112,8 @@ function PersistentDrawerLeft(props) {
             <ListItem 
             component={Link} to={'/Manage'}
             button
-            selected={selectedIndex === 3}
-            onClick={(event) => handleListItemClick(event, 3)}>
+            selected={index === 3}
+            >
                 <ListItemIcon>
                     <AddBox/>
                 </ListItemIcon>
@@ -181,7 +179,7 @@ function PersistentDrawerLeft(props) {
         </Hidden>
       </nav>
       <main className={classes.content}>
-        <div className={classes.toolbar} />
+        <div className={classes.toolbar} />    
         <Route exact path="/" component={HomeP} />
         <Route path="/SearchHuman" component={SearchHuman} />         
         <Route path="/Home" component={HomeP} />         

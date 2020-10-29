@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route } from 'react-router-dom';
 import Human from './Human';
-import * as actions from '../actions';
+import * as actions from '../../actions';
 
 const useStyles = makeStyles((theme) => ({   
     search: {
@@ -54,14 +54,21 @@ function Home(props){
             deptNo:e.target.value,
         }))
     }
+    const onChangeSort = (e) => {
+        dispatch(actions.changeSearch({
+            ...search.params,
+            sort:e.target.value,
+        }))
+    }
 
-    useEffect(() => {               
-        
+    useEffect(() => {                       
+        dispatch(actions.navigation(1));
+        //오류 발생하는데 먼지 모르겟슴
         return () => {//clean up    
             dispatch(actions.init());          
         }
         
-      },[])
+      },[dispatch])
     
 
 
@@ -98,6 +105,27 @@ function Home(props){
                 <option value={'d007'}>Sales</option>
                 <option value={'d008'}>Research</option>
                 <option value={'d009'}>Customer Service</option>
+                </Select>
+            </FormControl>
+            <FormControl variant="filled">
+                <InputLabel htmlFor="department-selection">Sort</InputLabel>
+                <Select
+                native
+                value={search.params.sort}
+                onChange={onChangeSort}               
+                >
+                <option aria-label="first" value={'empNo'}>직원 번호</option>
+                <option value={'empNo,desc'}>직원 번호(내림차순)</option>
+                <option value={'deptName'}>부서 이름</option>
+                <option value={'deptName,desc'}>부서 이름(내림차순)</option>
+                <option value={'birthDate'}>생년월일</option>
+                <option value={'birthDate,desc'}>생년월일(내림차순)</option>
+                <option value={'firstName'}>FirstName</option>
+                <option value={'firstName,desc'}>FirstName(내림차순)</option>
+                <option value={'lastName'}>LastName </option>
+                <option value={'lastName,desc'}>LastName(내림차순)</option>
+                <option value={'hireDate'}>고용일</option>
+                <option value={'hireDate,desc'}>고용일(내림차순)</option>
                 </Select>
             </FormControl>
             <Route component={Human}/> 
