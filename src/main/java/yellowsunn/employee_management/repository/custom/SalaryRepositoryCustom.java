@@ -12,6 +12,11 @@ public interface SalaryRepositoryCustom {
     /**
      * 주어진 직원들의 가장 최근 Salary 를 반환한다.
      */
+    List<Salary> findLatestByEmployeeIn(Collection<Employee> employees);
+
+    /**
+     * 주어진 현직 직원들의 현재 Salary 를 반환한다.
+     */
     List<Salary> findCurrentByEmployeeIn(Collection<Employee> employees);
 
     /**

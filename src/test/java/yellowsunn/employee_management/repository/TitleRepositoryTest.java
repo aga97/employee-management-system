@@ -140,7 +140,7 @@ class TitleRepositoryTest {
                 .collect(Collectors.toList());
 
         //when
-        List<Title> curTitles = titleRepository.findCurrentByEmployeeIn(employees);
+        List<Title> curTitles = titleRepository.findLatestByEmployeeIn(employees);
 
         //then
         List<String> collect = curTitles.stream()

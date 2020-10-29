@@ -3,6 +3,7 @@ package yellowsunn.employee_management.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +24,13 @@ public class TestEmployeeController {
     @GetMapping("/test/employees")
     public String findCurrentEmployees(EmpSearchDto.Condition condition, Pageable pageable, Model model) {
         List<Department> departments = departmentRepository.findAll();
-        Page<EmpSearchDto.Info> page = employeeService.findSearchInfoByCondition(condition, pageable);
+        Slice<EmpSearchDto.Info> page = employeeService.findSearchInfoByCondition(condition, pageable);
         List<EmpSearchDto.Info> content = page.getContent();
 
         model.addAttribute("content", content);
         model.addAttribute("departments", departments);
-        model.addAttribute("totalPages", page.getTotalPages());
-        model.addAttribute("totalElements", page.getTotalElements());
+//        model.addAttribute("totalPages", page.getTotalPages());
+//        model.addAttribute("totalElements", page.getTotalElements());
         model.addAttribute("pageSize", page.getSize());
         model.addAttribute("currentPage", page.getNumber());
 

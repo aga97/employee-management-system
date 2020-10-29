@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.dto.EmpSearchDto;
@@ -137,7 +138,7 @@ class DeptEmpRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(Sort.Direction.ASC, "emp_no"));
 
         //when
-        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentByCondition(new EmpSearchDto.Condition(), pageRequest);
+        Slice<DeptEmp> deptEmpPage = deptEmpRepository.findByCondition(new EmpSearchDto.Condition(), pageRequest);
         List<DeptEmp> content = deptEmpPage.getContent();
 
         //then

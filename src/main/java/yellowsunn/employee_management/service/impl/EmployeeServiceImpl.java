@@ -1,9 +1,9 @@
 package yellowsunn.employee_management.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.*;
@@ -26,14 +26,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final TitleRepository titleRepository;
 
     /**
-     * 주어진 조건에 맞는 가장 최근 직원 정보들을 CurEmpInfoDto로 매핑해 Page로 반환. <br/>
+     * 주주어진 조건에 맞는 직원 검색 정보를 가져온다. <br/>
      * 조건에 맞는 DeptEmp 객체들을 가져오면 @ManyToOne으로 조인된 Employee 객체들도 가져올 수 있다.
      * 가져온 Employee 객체들로 다시 Salary와 Title 객체들을 가져와서 Map형식으로 만든 다음 DTO로 조합하였다.
      */
     @Override
-    public Page<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
-        Page<DeptEmp> deptEmpPage = deptEmpRepository.findCurrentByCondition(condition, pageable);
-        List<DeptEmp> deptEmps = deptEmpPage.getContent();
+    public Slice<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
+        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findCurrentByCondition(condition, pageable);
+        List<DeptEmp> deptEmps = deptEmpSlice.getContent();
         List<Employee> employees = deptEmps.stream()
                 .map(DeptEmp::getEmployee)
                 .collect(Collectors.toList());
@@ -69,6 +69,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                             .build();
                 }).collect(Collectors.toList());
 
-        return new PageImpl<>(content, pageable, deptEmpPage.getTotalElements());
+        return new SliceImpl<>(content, pageable, deptEmpSlice.hasNext());
     }
 }
