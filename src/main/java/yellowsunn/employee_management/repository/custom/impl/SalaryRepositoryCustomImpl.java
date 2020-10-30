@@ -5,7 +5,9 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.dto.DeptDto;
-import yellowsunn.employee_management.entity.*;
+import yellowsunn.employee_management.entity.Employee;
+import yellowsunn.employee_management.entity.QSalary;
+import yellowsunn.employee_management.entity.Salary;
 import yellowsunn.employee_management.repository.custom.SalaryRepositoryCustom;
 
 import javax.persistence.EntityManager;
@@ -13,9 +15,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static com.querydsl.jpa.JPAExpressions.select;
-import static yellowsunn.employee_management.entity.QDeptEmp.*;
+import static yellowsunn.employee_management.entity.QDeptEmp.deptEmp;
 import static yellowsunn.employee_management.entity.QTitle.title;
 
 @Transactional(readOnly = true)
@@ -55,7 +58,28 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    public Optional<Salary> findLatestByEmployee(Employee employee) {
+        if (employee != null) {
+            QSalary salary = new QSalary("salary");
+
+            Salary findSalary = queryFactory
+                    .selectFrom(salary)
+                    .where(salary.employee.eq(employee),
+                            salary.toDate.eq(
+                                    select(deptEmp.toDate.max())
+                                            .from(deptEmp)
+                                            .where(deptEmp.employee.eq(employee))
+                                            .groupBy(deptEmp.employee)
+                            )
+                    ).fetchOne();
+
+            return Optional.ofNullable(findSalary);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo) {
         // 재직 중임을 나타낸다.
         LocalDate inService = LocalDate.of(9999, 1, 1);

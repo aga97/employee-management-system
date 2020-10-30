@@ -14,6 +14,7 @@ import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.entity.DeptEmp;
 import yellowsunn.employee_management.entity.Employee;
+import yellowsunn.employee_management.entity.Salary;
 import yellowsunn.employee_management.entity.id.DeptEmpId;
 
 import javax.persistence.EntityExistsException;
@@ -149,5 +150,44 @@ class DeptEmpRepositoryTest {
                 .doesNotContain(DeptEmpId.builder().empNo(10050).deptNo("d002").build())
                 .contains(DeptEmpId.builder().empNo(10080).deptNo("d003").build())
                 .doesNotContain(DeptEmpId.builder().empNo(10080).deptNo("d002").build());
+    }
+
+    @Test
+    public void findLatestByEmployee_test() throws Exception {
+        //given
+        Employee employee1 = em.find(Employee.class, 10143);
+        Employee employee2 = em.find(Employee.class, 10144);
+
+        //when
+        Optional<DeptEmp> deptEmp1 = deptEmpRepository.findLatestByEmployee(employee1);
+        Optional<DeptEmp> deptEmp2 = deptEmpRepository.findLatestByEmployee(employee2);
+
+        //then
+        assertThat(deptEmp1.isEmpty()).isTrue();
+        assertThat(deptEmp2.isPresent()).isTrue();
+        assertThat(deptEmp2.get().getToDate()).isEqualTo(LocalDate.of(1993, 8, 10));
+    }
+
+    @Test
+    public void findByEmployee_test() throws Exception {
+        //given
+        Employee employee1 = em.find(Employee.class, 10143);
+        Employee employee2 = em.find(Employee.class, 10144);
+
+        //when
+        List<DeptEmp> deptEmps1 = deptEmpRepository.findByEmployee(employee1);
+        List<DeptEmp> deptEmps2 = deptEmpRepository.findByEmployee(employee2);
+
+        //then
+        assertThat(deptEmps1.size()).isEqualTo(0);
+        assertThat(deptEmps2.size()).isNotEqualTo(0);
+
+        List<String> collect = deptEmps2.stream()
+                .map(salary -> salary.getId().getEmpNo() + "_" + salary.getToDate())
+                .collect(Collectors.toList());
+
+        assertThat(collect)
+                .contains("10144_1988-09-02")
+                .contains("10144_1993-08-10");
     }
 }

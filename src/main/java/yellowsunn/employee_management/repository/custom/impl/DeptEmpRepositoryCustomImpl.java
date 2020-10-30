@@ -11,14 +11,13 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import yellowsunn.employee_management.dto.EmpSearchDto;
-import yellowsunn.employee_management.entity.DeptEmp;
-import yellowsunn.employee_management.entity.Gender;
-import yellowsunn.employee_management.entity.QDeptEmp;
+import yellowsunn.employee_management.entity.*;
 import yellowsunn.employee_management.repository.custom.DeptEmpRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.querydsl.jpa.JPAExpressions.select;
 import static yellowsunn.employee_management.entity.QDepartment.department;
@@ -98,6 +97,30 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         boolean hasNext = pageable.isPaged() && content.size() > pageSize;
 
         return new SliceImpl<>(hasNext ? content.subList(0, pageSize) : content, pageable, hasNext);
+    }
+
+    @Override
+    public Optional<DeptEmp> findLatestByEmployee(Employee employee) {
+        if (employee != null) {
+            QDeptEmp subDeptEmp = new QDeptEmp("subDeptEmp");
+
+            DeptEmp findDeptEmp = queryFactory
+                    .selectFrom(deptEmp)
+                    .join(deptEmp.employee).fetchJoin()
+                    .join(deptEmp.department).fetchJoin()
+                    .where(deptEmp.employee.eq(employee),
+                            deptEmp.toDate.eq(
+                                    select(subDeptEmp.toDate.max())
+                                            .from(subDeptEmp)
+                                            .where(subDeptEmp.employee.eq(employee))
+                                            .groupBy(subDeptEmp.employee)
+                            )
+                    ).fetchOne();
+
+            return Optional.ofNullable(findDeptEmp);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

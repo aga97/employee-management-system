@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.jdbc.Sql;
 import yellowsunn.employee_management.entity.Employee;
+import yellowsunn.employee_management.entity.Salary;
 import yellowsunn.employee_management.entity.Title;
 import yellowsunn.employee_management.entity.id.TitleId;
 
@@ -154,5 +155,28 @@ class TitleRepositoryTest {
                 .contains("10058_Senior Staff")
                 .doesNotContain("10042_Staff")
                 .doesNotContain("10108_Staff");
+    }
+
+    @Test
+    public void findByEmployee_test() throws Exception {
+        //given
+        Employee employee1 = em.find(Employee.class, 10143);
+        Employee employee2 = em.find(Employee.class, 10144);
+
+        //when
+        List<Title> titles1 = titleRepository.findByEmployee(employee1);
+        List<Title> titles2 = titleRepository.findByEmployee(employee2);
+
+        //then
+        assertThat(titles1.size()).isEqualTo(0);
+        assertThat(titles2.size()).isNotEqualTo(0);
+
+        List<String> collect = titles2.stream()
+                .map(title -> title.getId().getEmpNo() + "_" + title.getToDate())
+                .collect(Collectors.toList());
+
+        assertThat(collect)
+                .contains("10144_1992-10-14")
+                .contains("10144_1993-08-10");
     }
 }
