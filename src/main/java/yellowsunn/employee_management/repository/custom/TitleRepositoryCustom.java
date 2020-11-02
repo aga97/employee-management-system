@@ -19,6 +19,12 @@ public interface TitleRepositoryCustom {
      */
     List<Title> findCurrentByEmployeeIn(Collection<Employee> employees);
 
+
+    /**
+     * 특정 직원이 맡았던 Title들을 전부 반환한다.
+     */
+    List<Title> findByEmployee(Employee employee);
+
     /**
      * 특정 직원의 가장 최근 Title 를 반환한다.
      */

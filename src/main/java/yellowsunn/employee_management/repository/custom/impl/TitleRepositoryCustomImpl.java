@@ -53,6 +53,15 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
     }
 
     @Override
+    public List<Title> findByEmployee(Employee employee) {
+        return queryFactory
+                .selectFrom(title)
+                .where(title.employee.eq(employee))
+                .orderBy(title.toDate.desc())
+                .fetch();
+    }
+
+    @Override
     public Optional<Title> findLatestByEmployee(Employee employee) {
         if (employee != null) {
             Title findTitle = queryFactory

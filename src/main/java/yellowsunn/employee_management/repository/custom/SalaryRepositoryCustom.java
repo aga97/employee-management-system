@@ -21,6 +21,12 @@ public interface SalaryRepositoryCustom {
      */
     List<Salary> findCurrentByEmployeeIn(Collection<Employee> employees);
 
+
+    /**
+     * 특정 직원의 모든 Salary들을 반환한다.
+     */
+    List<Salary> findByEmployee(Employee employee);
+
     /**
      * 특정 직원의 가장 최근 Salary 를 반환한다.
      */

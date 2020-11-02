@@ -128,6 +128,7 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                 .selectFrom(deptEmp)
                 .join(deptEmp.department).fetchJoin()
                 .where(deptEmp.employee.eq(employee))
+                .orderBy(deptEmp.toDate.desc())
                 .fetch();
     }
 

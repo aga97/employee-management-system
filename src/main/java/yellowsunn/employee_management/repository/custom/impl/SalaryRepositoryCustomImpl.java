@@ -58,6 +58,17 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     }
 
     @Override
+    public List<Salary> findByEmployee(Employee employee) {
+        QSalary salary = new QSalary("salary");
+
+        return queryFactory
+                .selectFrom(salary)
+                .where(salary.employee.eq(employee))
+                .orderBy(salary.toDate.desc())
+                .fetch();
+    }
+
+    @Override
     public Optional<Salary> findLatestByEmployee(Employee employee) {
         if (employee != null) {
             QSalary salary = new QSalary("salary");

@@ -10,8 +10,4 @@ import java.util.List;
 
 public interface SalaryRepository extends JpaRepository<Salary, SalaryId>, SalaryRepositoryCustom {
 
-    /**
-     * 특정 직원이 받았던 연봉 내역을 가져온다.
-     */
-    List<Salary> findByEmployee(Employee employee);
 }
