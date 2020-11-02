@@ -7,6 +7,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.repository.DepartmentRepository;
@@ -47,5 +49,21 @@ public class TestEmployeeController {
             model.addAttribute("sort", order.getProperty() + (order.isDescending() ? ",desc" : ""));
         },() -> model.addAttribute("sort", ""));
         return "testEmpSearch";
+    }
+
+    /**
+     * 특정 직원의 기본정보를 반환한다.
+     */
+    @GetMapping("/test/employee/{empNo}")
+    public String findEmployee(@PathVariable("empNo") Integer empNo, Model model) {
+        EmpDto.Info info = employeeService.findInfoByEmpNo(empNo);
+        EmpDto.DeptHistory deptHistory = employeeService.findDeptHistoryByEmpNo(empNo);
+        EmpDto.TitleHistory titleHistory = employeeService.findTitleHistoryByEmpNo(empNo);
+        EmpDto.SalaryHistory salaryHistory = employeeService.findSalaryHistoryByEmpNo(empNo);
+        model.addAttribute("info", info);
+        model.addAttribute("deptHistory", deptHistory);
+        model.addAttribute("titleHistory", titleHistory);
+        model.addAttribute("salaryHistory", salaryHistory);
+        return "testEmpInfo";
     }
 }

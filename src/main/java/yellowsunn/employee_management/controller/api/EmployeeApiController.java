@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.service.EmployeeService;
 
@@ -39,5 +41,37 @@ public class EmployeeApiController {
     @GetMapping("/api/employees")
     public Slice<EmpSearchDto.Info> findEmployees(EmpSearchDto.Condition condition, Pageable pageable) {
         return employeeService.findSearchInfoByCondition(condition, pageable);
+    }
+
+    /**
+     * 특정 직원의 기본정보를 반환한다.
+     */
+    @GetMapping("/api/employee/{empNo}")
+    public EmpDto.Info findEmployee(@PathVariable("empNo") Integer empNo) {
+        return employeeService.findInfoByEmpNo(empNo);
+    }
+
+    /**
+     * 특정 직원이 근무했던 부서 내역을 반환한다.
+     */
+    @GetMapping("/api/employee/{empNo}/dept")
+    public EmpDto.DeptHistory findDeptHistory(@PathVariable("empNo") Integer empNo) {
+        return employeeService.findDeptHistoryByEmpNo(empNo);
+    }
+
+    /**
+     * 특정 직원이 맡았던 직책 내역을 반환한다.
+     */
+    @GetMapping("/api/employee/{empNo}/title")
+    public EmpDto.TitleHistory findTitleHistory(@PathVariable("empNo") Integer empNo) {
+        return employeeService.findTitleHistoryByEmpNo(empNo);
+    }
+
+    /**
+     * 특정 직원이 받았던 연봉 내역을 반환한다.
+     */
+    @GetMapping("/api/employee/{empNo}/salary")
+    public EmpDto.SalaryHistory findSalaryHistory(@PathVariable("empNo") Integer empNo) {
+        return employeeService.findSalaryHistoryByEmpNo(empNo);
     }
 }

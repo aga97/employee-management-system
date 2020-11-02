@@ -155,4 +155,28 @@ class SalaryRepositoryTest {
                 .doesNotContain("10042_95035")
                 .doesNotContain("10108_45664");
     }
+
+    @Test
+    public void findByEmployee_test() throws Exception {
+        //given
+        Employee employee1 = em.find(Employee.class, 10143);
+        Employee employee2 = em.find(Employee.class, 10144);
+
+        //when
+        List<Salary> salaries1 = salaryRepository.findByEmployee(employee1);
+        List<Salary> salaries2 = salaryRepository.findByEmployee(employee2);
+
+        //then
+        assertThat(salaries1.size()).isEqualTo(0);
+        assertThat(salaries2.size()).isNotEqualTo(0);
+
+        List<String> collect = salaries2.stream()
+                .map(salary -> salary.getId().getEmpNo() + "_" + salary.getToDate())
+                .collect(Collectors.toList());
+
+        assertThat(collect)
+                .contains("10144_1991-10-13")
+                .contains("10144_1992-10-12")
+                .contains("10144_1993-08-10");
+    }
 }

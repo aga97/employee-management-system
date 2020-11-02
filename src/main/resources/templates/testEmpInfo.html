@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container" th:if="${!info.isEmpty()}">
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">기본 정보</a></li>
+        <li><a data-toggle="tab" href="#departments">부서 내역</a></li>
+        <li><a data-toggle="tab" href="#titles">직책 내역</a></li>
+        <li><a data-toggle="tab" href="#salaries">연봉 내역</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+            <br/>
+            <div class="container" th:if="${info.getContent().isRetirement()}">
+                <div class="alert alert-danger col-sm-6" role="alert">
+                    <span class="col-sm-4" style="font-weight: bold">퇴사: </span>
+                    <span th:text="${info.getContent().getRetireDate()}"/>
+                </div>
+            </div>
+
+            <div class="container form-group">
+                <label for="empNo" class="col-sm-2 col-form-label">사원번호:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="empNo"
+                           th:value="${info.getContent().getEmpNo()}"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="firstName" class="col-sm-2 col-form-label">이름:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="firstName"
+                           th:value="|${info.getContent().getFirstName()} ${info.getContent().getLastName()}|"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="birthDate" class="col-sm-2 col-form-label">생년월일(성별):</label>
+                <div class="col-sm-4">
+                    <input th:if="${info.getContent().getGender().toString() == 'M'}" type="text" readonly
+                           class="form-control" id="birthDate" th:value="|${info.getContent().getBirthDate()} (남성)|"/>
+                    <input th:unless="${info.getContent().getGender().toString() == 'M'}" type="text" readonly
+                           class="form-control" id="birthDate" th:value="|${info.getContent().getBirthDate()} (여성)|"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="hireDate" class="col-sm-2 col-form-label">입사일:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="hireDate"
+                           th:value="${info.getContent().getHireDate()}"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="department" class="col-sm-2 col-form-label">부서:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="department"
+                           th:value="${info.getContent().getDeptName()}"/>
+                </div>
+                <button th:if="${!info.getContent().isRetirement()}" type="button" class="btn btn-warning">수정</button>
+            </div>
+            <div class="container form-group">
+                <label for="title" class="col-sm-2 col-form-label">직책:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="title"
+                           th:value="${info.getContent().getTitle()}"/>
+                </div>
+                <button th:if="${!info.getContent().isRetirement()}" type="button" class="btn btn-warning">수정</button>
+            </div>
+            <div class="container form-group">
+                <label for="salary" class="col-sm-2 col-form-label">연봉:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="salary"
+                           th:value="'$' + ${info.getContent().getSalary()}"/>
+                </div>
+                <button th:if="${!info.getContent().isRetirement()}" type="button" class="btn btn-warning">수정</button>
+            </div>
+        </div>
+        <div id="departments" class="tab-pane fade">
+            <br/>
+            <div class="container col-sm-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>부서</th>
+                        <th>기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--현역인 경우-->
+                    <tr th:if="${!info.getContent().isRetirement()}"
+                        th:classappend="${history.getToDate().equals(deptHistory.getContent().get(0).getToDate())} ? info : null"
+                        th:each="history: ${deptHistory.getContent()}">
+                        <td th:text="${history.getDeptName()}"></td>
+                        <td th:if="${history.getToDate().toString() == '9999-01-01'}"
+                            th:text="|${history.getFromDate()} ~ |"></td>
+                        <td th:unless="${history.getToDate().toString() == '9999-01-01'}"
+                            th:text="|${history.getFromDate()} ~ ${history.getToDate()}|"></td>
+                    </tr>
+                    <!--은퇴한 경우-->
+                    <tr th:if="${info.getContent().isRetirement()}"
+                        th:classappend="${history.getToDate().equals(deptHistory.getContent().get(0).getToDate())} ? danger : null"
+                        th:each="history: ${deptHistory.getContent()}">
+                        <td th:text="${history.getDeptName()}"></td>
+                        <td th:text="|${history.getFromDate()} ~ ${history.getToDate()}|"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="titles" class="tab-pane fade">
+            <br/>
+            <div class="container col-sm-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>직책</th>
+                        <th>기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--현역인 경우-->
+                    <tr th:if="${!info.getContent().isRetirement()}"
+                        th:classappend="${title.getToDate().equals(titleHistory.getContent().get(0).getToDate())} ? info : null"
+                        th:each="title: ${titleHistory.getContent()}">
+                        <td th:text="${title.getTitle()}"></td>
+                        <td th:if="${title.getToDate().toString() == '9999-01-01'}"
+                            th:text="|${title.getFromDate()} ~ |"></td>
+                        <td th:unless="${title.getToDate().toString() == '9999-01-01'}"
+                            th:text="|${title.getFromDate()} ~ ${title.getToDate()}|"></td>
+                    </tr>
+                    <!--은퇴한 경우-->
+                    <tr th:if="${info.getContent().isRetirement()}"
+                        th:classappend="${title.getToDate().equals(titleHistory.getContent().get(0).getToDate())} ? danger : null"
+                        th:each="title: ${titleHistory.getContent()}">
+                        <td th:text="${title.getTitle()}"></td>
+                        <td th:text="|${title.getFromDate()} ~ ${title.getToDate()}|"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="salaries" class="tab-pane fade">
+            <br/>
+            <div class="container col-sm-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>연봉</th>
+                        <th>기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--현역인 경우-->
+                    <tr th:if="${!info.getContent().isRetirement()}"
+                        th:classappend="${salary.getToDate().equals(salaryHistory.getContent().get(0).getToDate())} ? info : null"
+                        th:each="salary: ${salaryHistory.getContent()}">
+                        <td th:text="'$' + ${salary.getSalary()}"></td>
+                        <td th:if="${salary.getToDate().toString() == '9999-01-01'}"
+                            th:text="|${salary.getFromDate()} ~ |"></td>
+                        <td th:unless="${salary.getToDate().toString() == '9999-01-01'}"
+                            th:text="|${salary.getFromDate()} ~ ${salary.getToDate()}|"></td>
+                    </tr>
+                    <!--은퇴한 경우-->
+                    <tr th:if="${info.getContent().isRetirement()}"
+                        th:classappend="${salary.getToDate().equals(salaryHistory.getContent().get(0).getToDate())} ? danger : null"
+                        th:each="salary: ${salaryHistory.getContent()}">
+                        <td th:text="'$' + ${salary.getSalary()}"></td>
+                        <td th:text="|${salary.getFromDate()} ~ ${salary.getToDate()}|"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

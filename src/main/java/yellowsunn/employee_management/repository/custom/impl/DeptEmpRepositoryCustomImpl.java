@@ -5,18 +5,19 @@ import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import yellowsunn.employee_management.dto.EmpSearchDto;
-import yellowsunn.employee_management.entity.DeptEmp;
-import yellowsunn.employee_management.entity.Gender;
-import yellowsunn.employee_management.entity.QDeptEmp;
+import yellowsunn.employee_management.entity.*;
 import yellowsunn.employee_management.repository.custom.DeptEmpRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.querydsl.jpa.JPAExpressions.select;
 import static yellowsunn.employee_management.entity.QDepartment.department;
@@ -34,6 +35,8 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     @Override
     public Slice<DeptEmp> findByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+
         QDeptEmp subDe = new QDeptEmp("subDe");
 
         JPAQuery<DeptEmp> query = queryFactory
@@ -56,30 +59,14 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                                 )
                 )
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
-
+                .limit(pageSize + 1);
         orderBy(query, pageable);
 
         List<DeptEmp> content = query.fetch();
 
-        long total;
+        boolean hasNext = pageable.isPaged() && content.size() > pageSize;
 
-        if (StringUtils.isEmpty(condition.getDeptNo())) {
-            total = queryFactory
-                    .selectFrom(employee)
-                    .where(
-                            empNoStartsWith(condition.getEmpNo()),
-                            firstNameStartsWith(condition.getFirstName()),
-                            lastNameStartsWith(condition.getLastName()),
-                            genderEq(condition.getGender()),
-                            birthDateEq(condition.getBirthDate()),
-                            hireDateEq(condition.getHireDate())
-                    ).fetchCount();
-        } else {
-            total = query.fetchCount();
-        }
-
-        return new PageImpl<>(content, pageable, total);
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     @Override
@@ -110,6 +97,39 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         boolean hasNext = pageable.isPaged() && content.size() > pageSize;
 
         return new SliceImpl<>(hasNext ? content.subList(0, pageSize) : content, pageable, hasNext);
+    }
+
+    @Override
+    public Optional<DeptEmp> findLatestByEmployee(Employee employee) {
+        if (employee != null) {
+            QDeptEmp subDeptEmp = new QDeptEmp("subDeptEmp");
+
+            DeptEmp findDeptEmp = queryFactory
+                    .selectFrom(deptEmp)
+                    .join(deptEmp.department).fetchJoin()
+                    .where(deptEmp.employee.eq(employee),
+                            deptEmp.toDate.eq(
+                                    select(subDeptEmp.toDate.max())
+                                            .from(subDeptEmp)
+                                            .where(subDeptEmp.employee.eq(employee))
+                                            .groupBy(subDeptEmp.employee)
+                            )
+                    ).fetchOne();
+
+            return Optional.ofNullable(findDeptEmp);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<DeptEmp> findByEmployee(Employee employee) {
+        return queryFactory
+                .selectFrom(deptEmp)
+                .join(deptEmp.department).fetchJoin()
+                .where(deptEmp.employee.eq(employee))
+                .orderBy(deptEmp.toDate.desc())
+                .fetch();
     }
 
     @Override
