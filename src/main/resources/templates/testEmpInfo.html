@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">기본 정보</a></li>
+        <li><a data-toggle="tab" href="#departments">부서 내역</a></li>
+        <li><a data-toggle="tab" href="#titles">직책 내역</a></li>
+        <li><a data-toggle="tab" href="#salaries">연봉 내역</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+            <br/>
+            <div class="container">
+                <div class="alert alert-danger col-sm-6" role="alert">
+                    <span class="col-sm-4" style="font-weight: bold">퇴사: </span>
+                    <span>퇴사 요일</span>
+                </div>
+            </div>
+
+            <div class="container form-group">
+                <label for="empNo" class="col-sm-2 col-form-label">사원번호:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="empNo"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="firstName" class="col-sm-2 col-form-label">이름:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="firstName"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="birthDate" class="col-sm-2 col-form-label">생년월일(성별):</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="birthDate"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="hireDate" class="col-sm-2 col-form-label">입사일:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="hireDate"/>
+                </div>
+            </div>
+            <div class="container form-group">
+                <label for="department" class="col-sm-2 col-form-label">부서:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="department"/>
+                </div>
+                <button type="button" class="btn btn-warning">수정</button>
+            </div>
+            <div class="container form-group">
+                <label for="title" class="col-sm-2 col-form-label">직책:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="title"/>
+                </div>
+                <button type="button" class="btn btn-warning">수정</button>
+            </div>
+            <div class="container form-group">
+                <label for="salary" class="col-sm-2 col-form-label">연봉:</label>
+                <div class="col-sm-4">
+                    <input type="text" readonly class="form-control" id="salary"/>
+                </div>
+                <button type="button" class="btn btn-warning">수정</button>
+            </div>
+        </div>
+        <div id="departments" class="tab-pane fade">
+            <br/>
+            <div class="container col-sm-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>부서</th>
+                        <th>기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="info">
+                        <td>John</td>
+                        <td>Doe</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="titles" class="tab-pane fade">
+            <br/>
+            <div class="container col-sm-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>직책</th>
+                        <th>기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="danger">
+                        <td>John</td>
+                        <td>Doe</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="salaries" class="tab-pane fade">
+            <br/>
+            <div class="container col-sm-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>연봉</th>
+                        <th>기간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Doe</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
