@@ -6,6 +6,7 @@ import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.DeptEmp;
 import yellowsunn.employee_management.entity.Employee;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DeptEmpRepositoryCustom {
@@ -21,9 +22,14 @@ public interface DeptEmpRepositoryCustom {
     Slice<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable);
 
     /**
-     * 특정 직원의 DeptEmp 를 반환한다. (가장 최근 부서만 반)
+     * 특정 직원의 DeptEmp 를 반환한다. (가장 최근 부서만 반환)
      */
     Optional<DeptEmp> findLatestByEmployee(Employee employee);
+
+    /**
+     * 특정 직원의 DeptEmp를 반환한다.
+     */
+    List<DeptEmp> findByEmployee(Employee employee);
 
     /**
      * 부서별 현직 직원들의 총인원를 구한다.

@@ -10,5 +10,8 @@ import java.util.List;
 
 public interface TitleRepository extends JpaRepository<Title, TitleId>, TitleRepositoryCustom {
 
+    /**
+     * 특정 직원이 맡았던 직책 내역을 가져온다.
+     */
     List<Title> findByEmployee(Employee employee);
 }

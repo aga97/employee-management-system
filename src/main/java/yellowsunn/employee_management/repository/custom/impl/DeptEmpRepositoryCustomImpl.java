@@ -106,7 +106,6 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
             DeptEmp findDeptEmp = queryFactory
                     .selectFrom(deptEmp)
-                    .join(deptEmp.employee).fetchJoin()
                     .join(deptEmp.department).fetchJoin()
                     .where(deptEmp.employee.eq(employee),
                             deptEmp.toDate.eq(
@@ -121,6 +120,15 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<DeptEmp> findByEmployee(Employee employee) {
+        return queryFactory
+                .selectFrom(deptEmp)
+                .join(deptEmp.department).fetchJoin()
+                .where(deptEmp.employee.eq(employee))
+                .fetch();
     }
 
     @Override
