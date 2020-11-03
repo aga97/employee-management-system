@@ -13,9 +13,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Accessibility, AccountTree, AddBox, Home } from '@material-ui/icons';
+import { Accessibility, AccountTree, AddBox, Create, ExpandLess, ExpandMore, Home } from '@material-ui/icons';
 import { Link, Route } from 'react-router-dom';
-import { Hidden } from '@material-ui/core';
+import { Collapse, Hidden } from '@material-ui/core';
 import SearchHuman from './human/SearchHuman';
 import HomeP from './home/Home';
 import Department from './department/Department';
@@ -55,13 +55,18 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
       },
+      nested: {
+        paddingLeft: theme.spacing(4),
+      },
     }));
 
 function PersistentDrawerLeft(props) {
     const { window } = props;
     const classes = useStyles();
     const theme = useTheme();
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
 
     const { index } = useSelector((state) => ({
       index : state.navigation,
@@ -108,18 +113,29 @@ function PersistentDrawerLeft(props) {
                 </ListItemIcon>
                 <ListItemText primary="부서조회"/>                
             </ListItem>
-           
-            <ListItem 
-            component={Link} to={'/Manage'}
-            button
-            selected={index === 3}
-            >
+      
+            <ListItem button onClick={() => {setOpen(!open)}}>
                 <ListItemIcon>
                     <AddBox/>
                 </ListItemIcon>
-                <ListItemText primary="사원관리"/>                
+                <ListItemText primary="사원관리"/>    
+                {open ? <ExpandLess /> : <ExpandMore />}            
             </ListItem>
-      
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <ListItem
+              component={Link} to={'/Manage'}
+              button
+              selected={index === 3}
+              className={classes.nested}
+              >
+                <ListItemIcon>
+                  <Create/>
+                </ListItemIcon>
+                <ListItemText primary="사원생성"/>              
+              </ListItem>
+            </Collapse>
+            
+
         </List>
         <Divider />
         </div>
