@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import Paper from "@material-ui/core/Paper";
-import {Grid, Table, TableHeaderRow,} from "@devexpress/dx-react-grid-material-ui";
+import {Grid, Table, TableHeaderRow, VirtualTable,} from "@devexpress/dx-react-grid-material-ui";
+import {SortingState} from "@devexpress/dx-react-grid";
+import {Loading} from "./theme/loading";
 
 const URL = "http://localhost:3000/api/employees";
 
@@ -18,16 +20,31 @@ export default () => {
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [lastQuery, setLastQuery] = useState();
+    const [sorting, setSorting] = useState([{columnName: 'empNo', direction: 'asc'}]);
+    const [sortingStateColumnExtensions] = useState([
+        {columnName: 'title', sortingEnabled: false},
+        {columnName: 'salary', sortingEnabled: false},
+    ]);
+
+    const getQueryString = () => {
+        let queryString = `${URL}`;
+
+        if (sorting.length) {
+            const sort = sorting[0];
+            queryString = `${queryString}?sort=${sort.columnName},${sort.direction}`;
+        }
+        return queryString;
+    }
 
     const loadData = () => {
-        const queryString = `${URL}`;
-
+        const queryString = getQueryString();
         if (queryString !== lastQuery && !loading) {
             setLoading(true);
             fetch(queryString)
                 .then((response) => response.json())
                 .then(({content}) => {
                     setRows(content);
+                    setLoading(false);
                 })
                 .catch(() => setLoading(false));
             setLastQuery(queryString);
@@ -37,11 +54,17 @@ export default () => {
     useEffect(() => loadData());
 
     return (
-        <Paper>
+        <Paper style={{width: '99.8%'}} /* 사이즈 자동조절이 잘안되서 width 지정 */>
             <Grid rows={rows} columns={columns}>
-                <Table/>
-                <TableHeaderRow/>
+                <SortingState
+                    columnExtensions={sortingStateColumnExtensions}
+                    sorting={sorting}
+                    onSortingChange={setSorting}
+                />
+                <VirtualTable/>
+                <TableHeaderRow showSortingControls/>
             </Grid>
+            {loading && <Loading/>}
         </Paper>
     );
 };
