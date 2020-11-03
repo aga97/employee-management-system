@@ -12,7 +12,6 @@ import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.service.EmployeeService;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class EmployeeApiController {

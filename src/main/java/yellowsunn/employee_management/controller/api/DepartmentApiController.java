@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import yellowsunn.employee_management.dto.DeptDto;
 import yellowsunn.employee_management.service.DepartmentService;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class DepartmentApiController {

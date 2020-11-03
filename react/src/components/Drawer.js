@@ -21,6 +21,7 @@ import HomeP from './home/Home';
 import Department from './department/Department';
 import Manage from './manage/Manage';
 import { useSelector } from 'react-redux';
+import Demo from "./human/Demo";
 
 const drawerWidth = 240;
 
@@ -184,7 +185,8 @@ function PersistentDrawerLeft(props) {
         <Route path="/SearchHuman" component={SearchHuman} />         
         <Route path="/Home" component={HomeP} />         
         <Route path="/Department" component={Department} />  
-        <Route path="/Manage" component={Manage} />          
+        <Route path="/Manage" component={Manage} />
+        <Route path="/demo" component={Demo} />
       </main>      
     </div>
   );
