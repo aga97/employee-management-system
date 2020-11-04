@@ -1106,6 +1106,14 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
+"@devexpress/dx-react-grid-material-ui@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid-material-ui/-/dx-react-grid-material-ui-2.7.3.tgz#2e845d3cf134341e504cd3979abc5ab85848805c"
+  integrity sha512-yJDh1TSJ+ifxZhllZ0qEmUXjjQvHzAjw7aDQ/zaO714KWJ9zQtOPkPlaxMbtxDxgnN3kB90fzzXXuS2hIEiTcg==
+  dependencies:
+    clsx "^1.0.4"
+    prop-types "^15.7.2"
+
 "@emotion/hash@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"

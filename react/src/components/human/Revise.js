@@ -15,9 +15,6 @@ const useStyles = makeStyles((theme) => ({
   marginTop : theme.spacing(1),
   marginBottom : theme.spacing(1),
  },
- header: {
-   backgroundColor : theme.palette.grey[400]
- }
 }));
 
 
@@ -68,16 +65,10 @@ function Revise(props) {
         직원 번호 : {datas.content.empNo}
       </Paper>      
       <Paper className={classes.paper} elevation={0}>
-        이름 : {datas.content.firstName}
+        이름 : {datas.content.firstName} {datas.content.lastName}
       </Paper>
       <Paper className={classes.paper} elevation={0}>
-        성 : {datas.content.lastName}
-      </Paper>
-      <Paper className={classes.paper} elevation={0}>
-        생년월일 : {datas.content.birthDate}
-      </Paper>
-      <Paper className={classes.paper} elevation={0}>
-        성별 : {datas.content.gender}
+        생년월일(성별) : {datas.content.birthDate}({datas.content.gender})
       </Paper>
       <Paper className={classes.paper} elevation={0}>
         고용일 : {datas.content.hireDate}
@@ -89,7 +80,7 @@ function Revise(props) {
         직책 : {datas.content.title}
       </Paper>
       <Paper className={classes.paper} elevation={0}>
-        연봉 : {datas.content.salary}
+        연봉 : ${datas.content.salary}
       </Paper>
     </Paper>
   )

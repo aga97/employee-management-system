@@ -61,7 +61,7 @@ function ReviseTitle(props) {
                     <TableBody>
                     <TableCell align="center">{text.title}</TableCell>
                     <TableCell align="center">{text.fromDate}</TableCell>
-                    <TableCell align="center">{text.toDate}</TableCell>
+                    <TableCell align="center">{text.toDate === '9999-01-01' ? '현재' : text.toDate}</TableCell>
                     </TableBody>
                 ))}
             

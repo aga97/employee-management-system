@@ -184,14 +184,14 @@ export default function Human() {
               <TableCell component="th" scope="row" align="center">
                 {text.empNo}
               </TableCell>
-              <TableCell align="center">{text.firstName}</TableCell>
+              <TableCell align="center">{text.firstName} </TableCell>
               <TableCell align="center">{text.lastName}</TableCell>
               <TableCell align="center">{text.gender}</TableCell>
               <TableCell align="center">{text.birthDate}</TableCell>    
               <TableCell align="center">{text.deptName}</TableCell>   
               <TableCell align="center">{text.title}</TableCell>       
               <TableCell align="center">{text.hireDate}</TableCell>               
-              <TableCell align="center">{text.salary}</TableCell>     
+              <TableCell align="center">${text.salary}</TableCell>     
             </TableRow>   
           ))}
         </TableBody>

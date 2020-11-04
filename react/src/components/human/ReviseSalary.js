@@ -58,15 +58,13 @@ function ReviseSalary(props) {
                 <TableCell align="center">시작일</TableCell>
                 <TableCell align="center">종료일</TableCell>
             </TableHead>
-           
                 {datas.content.map((text) => (
                     <TableBody>
-                    <TableCell align="center">{text.salary}</TableCell>
+                    <TableCell align="center">${text.salary}</TableCell>
                     <TableCell align="center">{text.fromDate}</TableCell>
-                    <TableCell align="center">{text.toDate}</TableCell>
+                    <TableCell align="center">{text.toDate === '9999-01-01' ? '현재' : text.toDate}</TableCell>
                     </TableBody>
                 ))}
-            
         </Table>
         </TableContainer>   
         </Paper>

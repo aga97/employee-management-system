@@ -5,11 +5,10 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 
 function App() {
-  return (        
-      
+  return (           
     <div className="App">            
         <BrowserRouter>         
-        <Route component={PersistentDrawerLeft} />           
+          <Route component={PersistentDrawerLeft} />           
         </BrowserRouter> 
     </div>   
     

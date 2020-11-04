@@ -65,7 +65,7 @@ function Posts(props) {
                             </CardActionArea>
                             </Link>
                             <CardActions>
-                                <Button size="small" color="primary">
+                                <Button size="small" color="default">
                                     메뉴로 이동 <TrendingFlat/>
                                 </Button>
                             </CardActions>
