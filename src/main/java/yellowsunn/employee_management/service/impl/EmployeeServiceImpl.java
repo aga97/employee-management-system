@@ -5,24 +5,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.*;
-import yellowsunn.employee_management.repository.DeptEmpRepository;
-import yellowsunn.employee_management.repository.EmployeeRepository;
-import yellowsunn.employee_management.repository.SalaryRepository;
-import yellowsunn.employee_management.repository.TitleRepository;
+import yellowsunn.employee_management.entity.id.DeptEmpId;
+import yellowsunn.employee_management.entity.id.SalaryId;
+import yellowsunn.employee_management.entity.id.TitleId;
+import yellowsunn.employee_management.repository.*;
 import yellowsunn.employee_management.service.EmployeeService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final DeptEmpRepository deptEmpRepository;
     private final SalaryRepository salaryRepository;
     private final TitleRepository titleRepository;
@@ -181,5 +186,57 @@ public class EmployeeServiceImpl implements EmployeeService {
         });
 
         return builder.content(contentList).build();
+    }
+
+    @Override
+    @Transactional
+    public EmpDto.Success create(EmpDto.Create dto) {
+        EmpDto.Create.Content content = dto.getContent();
+        Employee employee;
+        employee = employeeRepository.save(Employee.builder()
+                .firstName(content.getFirstName())
+                .lastName(content.getLastName())
+                .birthDate(content.getBirthDate())
+                .gender(content.getGender())
+                .hireDate(content.getHireDate())
+                .build());
+
+        Department department = departmentRepository.findById(content.getDeptNo()).orElse(null);
+        deptEmpRepository.save(DeptEmp.builder()
+                .id(DeptEmpId.builder()
+                        .empNo(employee.getEmpNo())
+                        .deptNo(content.getDeptNo())
+                        .build())
+                .employee(employee)
+                .department(department)
+                .fromDate(content.getHireDate())
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+
+        titleRepository.save(Title.builder()
+                .id(TitleId.builder()
+                        .empNo(employee.getEmpNo())
+                        .title(content.getTitle())
+                        .fromDate(content.getHireDate())
+                        .build())
+                .employee(employee)
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+
+        salaryRepository.save(Salary.builder()
+                .id(SalaryId.builder()
+                        .empNo(employee.getEmpNo())
+                        .fromDate(content.getHireDate())
+                        .build())
+                .employee(employee)
+                .salary(content.getSalary())
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+
+
+        EmpDto.Success success = new EmpDto.Success();
+        success.setEmpNo(employee.getEmpNo());
+        success.setSuccess(true);
+        return success;
     }
 }

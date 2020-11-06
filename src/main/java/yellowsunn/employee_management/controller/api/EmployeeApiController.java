@@ -1,18 +1,13 @@
 package yellowsunn.employee_management.controller.api;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.service.EmployeeService;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class EmployeeApiController {
@@ -73,5 +68,18 @@ public class EmployeeApiController {
     @GetMapping("/api/employee/{empNo}/salary")
     public EmpDto.SalaryHistory findSalaryHistory(@PathVariable("empNo") Integer empNo) {
         return employeeService.findSalaryHistoryByEmpNo(empNo);
+    }
+
+    @PostMapping("/api/employee/create")
+    public EmpDto.Success create(@RequestBody EmpDto.Create dto) {
+        EmpDto.Success success;
+        try {
+            success = employeeService.create(dto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            success = new EmpDto.Success();
+            success.setSuccess(false);
+        }
+        return success;
     }
 }
