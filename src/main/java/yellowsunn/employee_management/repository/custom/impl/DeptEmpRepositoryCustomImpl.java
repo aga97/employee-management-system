@@ -16,6 +16,7 @@ import yellowsunn.employee_management.repository.custom.DeptEmpRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,6 +125,10 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     @Override
     public List<DeptEmp> findByEmployee(Employee employee) {
+        if (employee == null) {
+            return new ArrayList<>();
+        }
+
         return queryFactory
                 .selectFrom(deptEmp)
                 .join(deptEmp.department).fetchJoin()

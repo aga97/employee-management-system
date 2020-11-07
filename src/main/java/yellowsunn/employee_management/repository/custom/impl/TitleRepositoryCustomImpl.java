@@ -11,6 +11,7 @@ import yellowsunn.employee_management.repository.custom.TitleRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,10 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
 
     @Override
     public List<Title> findByEmployee(Employee employee) {
+        if (employee == null) {
+            return new ArrayList<>();
+        }
+
         return queryFactory
                 .selectFrom(title)
                 .where(title.employee.eq(employee))
