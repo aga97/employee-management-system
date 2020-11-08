@@ -1,8 +1,10 @@
 import 'date-fns';
-import { Button, Card, CardContent, FormControl, Grid, InputLabel, makeStyles, Select, TextField, Typography } from '@material-ui/core';
+import { AppBar, Backdrop, Button, Card, CardContent, CardHeader, FormControl, Grid, IconButton, InputLabel, makeStyles, Paper, Select, TextField, Typography } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React, { useState } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
+import { Close } from '@material-ui/icons';
+import InsertBack from './InsertBack';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -19,50 +21,85 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(2),
+  }, 
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    Color: '#fff'
   },
   }));
 
 function Insert() {
 
-const [birth, setBirth] = useState(new Date());
-const [hire, setHire] = useState(new Date());
+const [birthDate, setBirthDate] = useState(new Date());
+const [hireDate, setHireDate] = useState(new Date());
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+const [gender, setGender] = useState('M');
+const [depNo, setDepNo] = useState('d009');
+const [title, setTitle] = useState('Staff');
+const [salary, setSalary] = useState(0);
+
+const [expanded, setExpanded] = useState(false);
 
 const [state, setState] = useState({
   gender: 'M',
-  department: 'Customer Service',
-  title: 'Staff'
+  depNo: 'd009',
+  title: 'Staff',
+  firstName: '',
+  lastName: '',
+  salary: 0 ,
+  birthDate: '',
+  hireDate: '',
 })
 
-const handleBirthChange = (date) => {
-  setBirth(date);
+const handleBirthChange = (event, date) => {
+  setBirthDate(date);
 };
 const handleHireChange = (date) => {
-  setHire(date);
+  setHireDate(date);
 };
 const handleGenderChange = (event) => {
+  setGender(event.target.value);
   setState({
     ...state,
     gender: event.target.value,
   })
 }
 const handleDepartmentChange = (event) => {
+  setDepNo(event.target.value);
   setState({
     ...state,
-    department: event.target.value,
+    depNo: event.target.value,
   })
 }
 const handleTitleChange = (event) => {
+  setTitle(event.target.value);
   setState({
     ...state,
     title: event.target.value,
   })
 }
 
-
+const handleInput = (event) => {
+  const birth = birthDate.getFullYear() + '/' + birthDate.getMonth() + 1 + '/' + birthDate.getDate();
+  const hire = birthDate.getFullYear() + '/' + birthDate.getMonth() + '/' + birthDate.getDate();
+  setState({
+    ...state,
+    gender: gender,
+    depNo: depNo,
+    title: title,
+    firstName: firstName,
+    lastName: lastName,
+    salary: salary,
+    birthDate: birth,
+    hireDate: hire,
+  })
+}
 
 const classes = useStyles();
 
   return (
+   
     <div >
       <Card>
         <CardContent>
@@ -80,7 +117,7 @@ const classes = useStyles();
                 <Typography>
                   FirstName
                 </Typography>
-                <TextField required id="firstName" label="Required" />
+                <TextField required id="firstName" label="Required" onChange={(e) => setFirstName(e.target.value) } />
               </Card>  
             </Grid>  
             <Grid item md>      
@@ -88,7 +125,7 @@ const classes = useStyles();
                 <Typography>
                   LastName
                 </Typography>
-                <TextField required id="LastName" label="Required"  />
+                <TextField required id="LastName" label="Required" onChange={(e) => setLastName(e.target.value) } />
               </Card>
             </Grid>
           <Grid item md>
@@ -100,8 +137,8 @@ const classes = useStyles();
                 <InputLabel htmlFor="gender-select"/>
                 <Select
                   native
-                  value={state.gender}
-                  onChange={handleGenderChange}
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
                   >
                     <option aria-label="None" value="M">Male</option>
                     <option value="F">Female</option>
@@ -122,8 +159,8 @@ const classes = useStyles();
                   label="Date"
                   format="yyyy/MM/dd"
                   maxDate={new Date()}
-                  value={birth}
-                  onChange={handleBirthChange}
+                  value={birthDate}
+                  onChange={(date) => setBirthDate(date)}
                   KeyboardButtonProps={{
                     'aria-label' : 'change date',
                   }}
@@ -142,18 +179,18 @@ const classes = useStyles();
                 <InputLabel htmlFor="department-select"/>
                 <Select
                   native
-                  value={state.department}
-                  onChange={handleDepartmentChange}
+                  value={depNo}
+                  onChange={(e) => setDepNo(e.target.value)}
                   >
-                    <option aria-label="None" value="Customer Service">Customer Service</option>
-                    <option value="Development">Development</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Human Resources">Human Resources</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Production">Production</option>
-                    <option value="Quality Management">Quality Management</option>
-                    <option value="Research">Research</option>
-                    <option value="Sales">Sales</option>
+                    <option aria-label="None" value="d009">Customer Service</option>
+                    <option value="d005">Development</option>
+                    <option value="d002">Finance</option>
+                    <option value="d003">Human Resources</option>
+                    <option value="d001">Marketing</option>
+                    <option value="d004">Production</option>
+                    <option value="d006">Quality Management</option>
+                    <option value="d008">Research</option>
+                    <option value="d007">Sales</option>
                   </Select>
               </FormControl>
             </Card>
@@ -167,8 +204,8 @@ const classes = useStyles();
                 <InputLabel htmlFor="title-select"/>
                 <Select
                   native
-                  value={state.title}
-                  onChange={handleTitleChange}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   >
                     <option aria-label="None" value="Staff">Staff</option>
                     <option value="Manager">Manager</option>
@@ -194,8 +231,8 @@ const classes = useStyles();
                   label="Date"
                   format="yyyy/MM/dd"
                   maxDate={new Date()}
-                  value={hire}
-                  onChange={handleHireChange}
+                  value={hireDate}
+                  onChange={(date) => setHireDate(date)}
                   KeyboardButtonProps={{
                     'aria-label' : 'change date',
                   }}
@@ -208,12 +245,32 @@ const classes = useStyles();
               <Typography>
                 Salary
               </Typography>
-              <TextField required id="Salary" label="Required" type="number"/>
+              <TextField required id="salary" label="Required" type="number" onChange={(e) => setSalary(e.target.value)}/>
             </Card>
           </Grid>         
         </Grid>
         </CardContent>  
-        <Button className={classes.button} variant="contained" color="primary" >생성</Button>      
+        <Button className={classes.button} variant="contained" color="primary" onClick={() => {
+          handleInput();
+          setExpanded(!expanded);
+          }} >생성</Button>     
+
+      { expanded === true &&
+      <Backdrop className={classes.backdrop} open={expanded} >
+        <Card>
+        <CardHeader action={
+        <IconButton onClick={() => {
+          setExpanded(false)
+          }}><Close/></IconButton>}/>
+        <CardContent >
+          <AppBar position="static" />
+          <InsertBack content={state}/>
+          {console.log(state)}
+        </CardContent>
+          
+        </Card>
+      </Backdrop>
+      } 
       </Card>
     </div>
   )

@@ -6,13 +6,6 @@ import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducers from './reducers';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
-
-const darkTheme = createMuiTheme({
-  palette: {
-    type: 'dark',
-  },
-});
 
 const store = createStore(reducers);
 
