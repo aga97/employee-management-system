@@ -15,14 +15,12 @@ import yellowsunn.employee_management.entity.id.TitleId;
 import yellowsunn.employee_management.repository.*;
 import yellowsunn.employee_management.service.EmployeeService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -31,6 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final DeptEmpRepository deptEmpRepository;
     private final SalaryRepository salaryRepository;
     private final TitleRepository titleRepository;
+    private final DeptManagerRepository deptManagerRepository;
 
     /**
      * 주주어진 조건에 맞는 직원 검색 정보를 가져온다. <br/>
@@ -39,14 +38,14 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public Slice<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
-        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findCurrentByCondition(condition, pageable);
+        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findByCondition(condition, pageable);
         List<DeptEmp> deptEmps = deptEmpSlice.getContent();
         List<Employee> employees = deptEmps.stream()
                 .map(DeptEmp::getEmployee)
                 .collect(Collectors.toList());
 
-        List<Salary> salaries = salaryRepository.findCurrentByEmployeeIn(employees);
-        List<Title> titles = titleRepository.findCurrentByEmployeeIn(employees);
+        List<Salary> salaries = salaryRepository.findLatestByEmployeeIn(employees);
+        List<Title> titles = titleRepository.findLatestByEmployeeIn(employees);
 
         // Map으로 만들어서 DTO 결합하는데 사용
         Map<Integer, Integer> salaryMap = new HashMap<>();
@@ -192,8 +191,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmpDto.Success create(EmpDto.Create dto) {
         EmpDto.Create.Content content = dto.getContent();
-        Employee employee;
-        employee = employeeRepository.save(Employee.builder()
+
+        Optional<Department> deptOptional = departmentRepository.findById(content.getDeptNo());
+        if (deptOptional.isEmpty()) {
+            throw new IllegalStateException("Invalid department.");
+        }
+
+        // 부서에 현직 매니저가 있는지 확인
+        if (content.getTitle().equals("manager")) {
+            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
+                throw new IllegalStateException("Manager is already exists.");
+            }
+        }
+
+        Employee employee = employeeRepository.save(Employee.builder()
                 .firstName(content.getFirstName())
                 .lastName(content.getLastName())
                 .birthDate(content.getBirthDate())
@@ -201,14 +212,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .hireDate(content.getHireDate())
                 .build());
 
-        Department department = departmentRepository.findById(content.getDeptNo()).orElse(null);
         deptEmpRepository.save(DeptEmp.builder()
                 .id(DeptEmpId.builder()
                         .empNo(employee.getEmpNo())
                         .deptNo(content.getDeptNo())
                         .build())
                 .employee(employee)
-                .department(department)
+                .department(deptOptional.get())
                 .fromDate(content.getHireDate())
                 .toDate(LocalDate.of(9999, 1, 1))
                 .build());

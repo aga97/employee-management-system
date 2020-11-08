@@ -1,5 +1,6 @@
 package yellowsunn.employee_management.repository.custom;
 
+import org.springframework.data.domain.Sort;
 import yellowsunn.employee_management.entity.Employee;
 import yellowsunn.employee_management.entity.Title;
 
@@ -33,5 +34,5 @@ public interface TitleRepositoryCustom {
     /**
      * 모든 직책 목록을 반환한다.
      */
-    List<String> findTitles();
+    List<String> findTitles(Sort sort);
 }

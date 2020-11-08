@@ -5,6 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import yellowsunn.employee_management.entity.Gender;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -104,18 +109,19 @@ public class EmpDto {
      */
     @Data
     public static class Create {
+        @Valid
         private Content content;
 
         @Data
         public static class Content {
-            private String firstName;
-            private String lastName;
-            private LocalDate birthDate;
-            private Gender gender;
-            private LocalDate hireDate;
-            private String deptNo;
-            private String title;
-            private Integer Salary;
+            @NotEmpty private String firstName;
+            @NotEmpty private String lastName;
+            @NotNull @PastOrPresent private LocalDate birthDate;
+            @NotNull  private Gender gender;
+            @NotNull @PastOrPresent private LocalDate hireDate;
+            @NotEmpty private String deptNo;
+            @NotEmpty private String title;
+            @NotNull @Positive private Integer Salary;
         }
     }
 

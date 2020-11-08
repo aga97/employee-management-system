@@ -16,15 +16,15 @@ public class DepartmentApiController {
 
     /**
      * 전체 부서 목록을 반환한다.
-     * <p>deptNo, detName으로 정렬 가능</p>
+     * <p>deptNo, deptName으로 정렬 가능</p>
      *
      * <pre>
-     * Example1: detNo 오름차순 정렬
+     * Example1: deptNo 오름차순 정렬
      *
      * localhost:8080/api/departments?sort=deptNo
      *
      *
-     * Example2: detName 내림차순 정렬
+     * Example2: deptName 내림차순 정렬
      *
      * localhost:8080/api/departments?sort=deptName,desc
      * </pre>

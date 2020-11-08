@@ -1,6 +1,7 @@
 package yellowsunn.employee_management.repository.custom.impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.entity.DeptManager;
 import yellowsunn.employee_management.repository.custom.DeptManagerRepositoryCustom;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 import static yellowsunn.employee_management.entity.QDeptManager.deptManager;
 
+@Transactional(readOnly = true)
 public class DeptManagerRepositoryCustomImpl implements DeptManagerRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;

@@ -3,10 +3,16 @@ package yellowsunn.employee_management.controller.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.service.EmployeeService;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,8 +77,16 @@ public class EmployeeApiController {
     }
 
     @PostMapping("/api/employee/create")
-    public EmpDto.Success create(@RequestBody EmpDto.Create dto) {
+    public EmpDto.Success create(@RequestBody @Valid EmpDto.Create dto, BindingResult bindingResult) {
         EmpDto.Success success;
+
+        // 유효성 검사 오류
+        if (bindingResult.hasErrors()) {
+            success = new EmpDto.Success();
+            success.setSuccess(false);
+            return success;
+        }
+
         try {
             success = employeeService.create(dto);
         } catch (Exception e) {
