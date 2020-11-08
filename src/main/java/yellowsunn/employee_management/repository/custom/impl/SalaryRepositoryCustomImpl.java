@@ -60,6 +60,9 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     @Override
     public List<Salary> findByEmployee(Employee employee) {
         QSalary salary = new QSalary("salary");
+        if (employee == null) {
+            return new ArrayList<>();
+        }
 
         return queryFactory
                 .selectFrom(salary)

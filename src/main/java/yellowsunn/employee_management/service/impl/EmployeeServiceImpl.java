@@ -5,13 +5,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.*;
-import yellowsunn.employee_management.repository.DeptEmpRepository;
-import yellowsunn.employee_management.repository.EmployeeRepository;
-import yellowsunn.employee_management.repository.SalaryRepository;
-import yellowsunn.employee_management.repository.TitleRepository;
+import yellowsunn.employee_management.entity.id.DeptEmpId;
+import yellowsunn.employee_management.entity.id.SalaryId;
+import yellowsunn.employee_management.entity.id.TitleId;
+import yellowsunn.employee_management.repository.*;
 import yellowsunn.employee_management.service.EmployeeService;
 
 import java.time.LocalDate;
@@ -19,13 +20,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final DeptEmpRepository deptEmpRepository;
     private final SalaryRepository salaryRepository;
     private final TitleRepository titleRepository;
+    private final DeptManagerRepository deptManagerRepository;
 
     /**
      * 주주어진 조건에 맞는 직원 검색 정보를 가져온다. <br/>
@@ -34,14 +38,14 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public Slice<EmpSearchDto.Info> findSearchInfoByCondition(EmpSearchDto.Condition condition, Pageable pageable) {
-        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findCurrentByCondition(condition, pageable);
+        Slice<DeptEmp> deptEmpSlice = deptEmpRepository.findByCondition(condition, pageable);
         List<DeptEmp> deptEmps = deptEmpSlice.getContent();
         List<Employee> employees = deptEmps.stream()
                 .map(DeptEmp::getEmployee)
                 .collect(Collectors.toList());
 
-        List<Salary> salaries = salaryRepository.findCurrentByEmployeeIn(employees);
-        List<Title> titles = titleRepository.findCurrentByEmployeeIn(employees);
+        List<Salary> salaries = salaryRepository.findLatestByEmployeeIn(employees);
+        List<Title> titles = titleRepository.findLatestByEmployeeIn(employees);
 
         // Map으로 만들어서 DTO 결합하는데 사용
         Map<Integer, Integer> salaryMap = new HashMap<>();
@@ -181,5 +185,68 @@ public class EmployeeServiceImpl implements EmployeeService {
         });
 
         return builder.content(contentList).build();
+    }
+
+    @Override
+    @Transactional
+    public EmpDto.Success create(EmpDto.Create dto) {
+        EmpDto.Create.Content content = dto.getContent();
+
+        Optional<Department> deptOptional = departmentRepository.findById(content.getDeptNo());
+        if (deptOptional.isEmpty()) {
+            throw new IllegalStateException("Invalid department.");
+        }
+
+        // 부서에 현직 매니저가 있는지 확인
+        if (content.getTitle().equals("manager")) {
+            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
+                throw new IllegalStateException("Manager is already exists.");
+            }
+        }
+
+        Employee employee = employeeRepository.save(Employee.builder()
+                .firstName(content.getFirstName())
+                .lastName(content.getLastName())
+                .birthDate(content.getBirthDate())
+                .gender(content.getGender())
+                .hireDate(content.getHireDate())
+                .build());
+
+        deptEmpRepository.save(DeptEmp.builder()
+                .id(DeptEmpId.builder()
+                        .empNo(employee.getEmpNo())
+                        .deptNo(content.getDeptNo())
+                        .build())
+                .employee(employee)
+                .department(deptOptional.get())
+                .fromDate(content.getHireDate())
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+
+        titleRepository.save(Title.builder()
+                .id(TitleId.builder()
+                        .empNo(employee.getEmpNo())
+                        .title(content.getTitle())
+                        .fromDate(content.getHireDate())
+                        .build())
+                .employee(employee)
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+
+        salaryRepository.save(Salary.builder()
+                .id(SalaryId.builder()
+                        .empNo(employee.getEmpNo())
+                        .fromDate(content.getHireDate())
+                        .build())
+                .employee(employee)
+                .salary(content.getSalary())
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+
+
+        EmpDto.Success success = new EmpDto.Success();
+        success.setEmpNo(employee.getEmpNo());
+        success.setSuccess(true);
+        return success;
     }
 }

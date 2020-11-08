@@ -1,16 +1,19 @@
 package yellowsunn.employee_management.repository.custom.impl;
 
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.entity.Employee;
-import yellowsunn.employee_management.entity.QDeptEmp;
 import yellowsunn.employee_management.entity.QTitle;
 import yellowsunn.employee_management.entity.Title;
 import yellowsunn.employee_management.repository.custom.TitleRepositoryCustom;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +57,10 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
 
     @Override
     public List<Title> findByEmployee(Employee employee) {
+        if (employee == null) {
+            return new ArrayList<>();
+        }
+
         return queryFactory
                 .selectFrom(title)
                 .where(title.employee.eq(employee))
@@ -81,11 +88,20 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
     }
 
     @Override
-    public List<String> findTitles() {
-        return queryFactory
+    public List<String> findTitles(Sort sort) {
+        JPAQuery<String> query = queryFactory
                 .select(title.id.title)
                 .from(title)
-                .groupBy(title.id.title)
-                .fetch();
+                .groupBy(title.id.title);
+
+        Optional<Sort.Order> order = sort.stream().findFirst();
+        order.ifPresent(o -> {
+            if (o.getProperty().equals("title")) {
+                StringPath title = QTitle.title.id.title;
+                query.orderBy(o.isAscending() ? title.asc() : title.desc());
+            }
+        });
+
+        return query.fetch();
     }
 }

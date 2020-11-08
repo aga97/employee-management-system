@@ -31,4 +31,9 @@ public interface EmployeeService {
      * 특정 직원이 받았던 연봉 내역을 가져온다.
      */
     EmpDto.SalaryHistory findSalaryHistoryByEmpNo(Integer empNo);
+
+    /**
+     * 직원 생성
+     */
+    EmpDto.Success create(EmpDto.Create dto);
 }

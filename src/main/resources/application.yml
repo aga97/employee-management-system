@@ -20,6 +20,11 @@ spring:
     hibernate:
       ddl-auto: none
 
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace

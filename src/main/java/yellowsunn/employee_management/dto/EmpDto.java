@@ -1,12 +1,15 @@
 package yellowsunn.employee_management.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import yellowsunn.employee_management.entity.Gender;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -99,5 +102,33 @@ public class EmpDto {
             private LocalDate fromDate;
             private LocalDate toDate;
         }
+    }
+
+    /**
+     * 직원 생성 dto
+     */
+    @Data
+    public static class Create {
+        @Valid
+        private Content content;
+
+        @Data
+        public static class Content {
+            @NotEmpty private String firstName;
+            @NotEmpty private String lastName;
+            @NotNull @PastOrPresent private LocalDate birthDate;
+            @NotNull  private Gender gender;
+            @NotNull @PastOrPresent private LocalDate hireDate;
+            @NotEmpty private String deptNo;
+            @NotEmpty private String title;
+            @NotNull @Positive private Integer Salary;
+        }
+    }
+
+    @Data
+    public static class Success {
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Integer empNo;
+        private boolean success;
     }
 }

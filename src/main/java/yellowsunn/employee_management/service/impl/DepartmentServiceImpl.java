@@ -3,6 +3,7 @@ package yellowsunn.employee_management.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yellowsunn.employee_management.dto.DeptDto;
 import yellowsunn.employee_management.entity.Department;
 import yellowsunn.employee_management.entity.DeptManager;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
