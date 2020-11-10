@@ -232,7 +232,7 @@ const classes = useStyles();
                     <option value="Engineer">Engineer</option>
                     <option value="Technique Leader">Technique Leader</option>
                     <option value="Senior Staff">Senior Staff</option>
-                    <option value="Senioir Engineer">Senior Engineer</option>
+                    <option value="Senior Engineer">Senior Engineer</option>
                   </Select>
               </FormControl>
             </Card>

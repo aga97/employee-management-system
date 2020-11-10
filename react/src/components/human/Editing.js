@@ -1,8 +1,10 @@
-import { Button, Chip, CircularProgress, FormControl, Grid, InputLabel, makeStyles, Paper, Select, TextField } from '@material-ui/core';
+import { Button, Chip, CircularProgress, FormControl, Grid, InputLabel, makeStyles, Paper, Select, Snackbar, TextField } from '@material-ui/core';
 import { Restaurant } from '@material-ui/icons';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import ReviseSalary from './ReviseSalary';
+import Delete from './Delete';
+import MuiAlert from '@material-ui/lab/Alert';
+import Push from './Push';
 
 const useStyles = makeStyles((theme) => ({
  root: {
@@ -26,9 +28,14 @@ const useStyles = makeStyles((theme) => ({
  button: {
   marginTop : theme.spacing(1),
   marginBottom : theme.spacing(1),
+  marginLeft : theme.spacing(1),
   float: 'right',
  }
 }));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 function Editing(props) {
@@ -39,12 +46,15 @@ function Editing(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [isPush, setIsPush] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
+
   const [revise, setRevise] = useState({
     content :{
       empNo : '',
       deptNo : '',
       title : '',
-      salary : ''
+      salary : 0
       },
       deptNo : false,
       title : false,
@@ -133,7 +143,8 @@ function Editing(props) {
   };
 
   const handleSalaryChange = (e) => {
-    if(e.target.value === datas.content.title) {
+    let numSalary = e.target.value * 1; 
+    if(numSalary === datas.content.salary) {
       setRevise(
         {
           ...revise,
@@ -147,7 +158,7 @@ function Editing(props) {
           ...revise,
           content: {
             ...revise.content,
-            salary: e.target.value,
+            salary: numSalary,
           },
           salary : true,
         }
@@ -184,7 +195,22 @@ function Editing(props) {
             <TextField className={classes.filed} label="고용일" value={datas.content.hireDate} variant="outlined" disabled/>
           </Paper>          
           <Paper className={classes.paper}>
-            <TextField className={classes.filed} label="직책" defaultValue={datas.content.title} variant="outlined" onChange={handleTitleChange}/>
+            <FormControl className={classes.filed} variant="outlined">
+                <InputLabel>직책</InputLabel>
+                <Select
+                  native
+                  value={revise.content.title}
+                  onChange={handleTitleChange}
+                  >
+                    <option value="Staff">Staff</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Assistant Engineer">Assistant Engineer</option>
+                    <option value="Engineer">Engineer</option>
+                    <option value="Technique Leader">Technique Leader</option>
+                    <option value="Senior Staff">Senior Staff</option>
+                    <option value="Senior Engineer">Senior Engineer</option>
+                  </Select>
+              </FormControl>
           </Paper>
         </Grid>
         <Grid item xs={6}>
@@ -195,12 +221,9 @@ function Editing(props) {
             <TextField className={classes.filed} label="성별" value={datas.content.gender} variant="outlined" disabled/>
           </Paper>
           <Paper className={classes.paper}>
-            {//선택으로 할것}
-            }
-            <TextField className={classes.filed} label="부서" defaultValue={datas.content.deptName} variant="outlined" onChange={handleDeptChange}/>
-            <FormControl>
+            <FormControl className={classes.filed} variant="outlined">
               <InputLabel>부서</InputLabel>
-              <Select
+              <Select                
                 native
                 value={revise.content.deptNo}
                 onChange={handleDeptChange}
@@ -218,14 +241,27 @@ function Editing(props) {
             </FormControl>
           </Paper>
           <Paper className={classes.paper}>
-            <TextField className={classes.filed} label="연봉($)" defaultValue={datas.content.salary} variant="outlined" onChange={handleSalaryChange}/>
+            <TextField className={classes.filed} label="연봉($)" type="number" defaultValue={datas.content.salary} variant="outlined" onChange={handleSalaryChange}/>
           </Paper>
         </Grid>
       </Grid>
     </Paper>
-      <Button className={classes.button} color="secondary" variant="contained">삭제</Button>
-      <Button className={classes.button} color="primary" variant="contained">제출</Button>
-      {console.log(revise)}
+      <Button className={classes.button} color="secondary" variant="contained" onClick={() => setIsDelete(true) } disabled={isDelete || isPush}>삭제</Button>
+      <Button className={classes.button} color="primary" variant="contained" onClick={() => setIsPush(true) } disabled={isDelete || isPush}>제출</Button>
+      {isDelete && 
+      <Snackbar anchorOrigin={{vertical:'top', horizontal:'center'}} open={isDelete} autoHideDuration={6000} onClose={() => setIsDelete(false)}>
+        <Alert onClose={() => setIsDelete(false)} severity="info">
+          <Delete empNo={datas.content.empNo} />
+        </Alert>
+      </Snackbar>
+      }
+      {isPush && 
+      <Snackbar anchorOrigin={{vertical:'top', horizontal:'center'}} open={isPush} autoHideDuration={6000} onClose={() => setIsPush(false)}>
+        <Alert onClose={() => setIsPush(false)} severity="info">
+          <Push revise={revise} />
+        </Alert>
+      </Snackbar>     
+      }
     </div>
   )
 }
