@@ -1,4 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Typography } from '@material-ui/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
@@ -42,14 +42,22 @@ function InsertBack(props) {
 
     return (
         <div>
-            {datas.seccess === true &&
+            {datas.success === true &&
                 <div>
-                    성공
+                    <Typography>
+                    성공했습니다.
+                    </Typography>
+                    <Typography>
+                    사원 번호 : {datas.empNo}
+                    </Typography>
                 </div>
-                /**
-                 * 성공시 띄울거
-                 * 실패시 띄울거...
-                 */
+            }
+            {datas.success === false &&
+                <div>
+                    <Typography>
+                    실패했습니다.
+                    </Typography>
+                </div>
             }
         </div>
     )

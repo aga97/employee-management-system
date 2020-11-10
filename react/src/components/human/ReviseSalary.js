@@ -1,4 +1,4 @@
-import { CircularProgress, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead } from '@material-ui/core';
+import { CircularProgress, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
@@ -23,7 +23,7 @@ function ReviseSalary(props) {
       try {           
         setDatas(null);
         setLoading(true);        
-        const res = await axios.get('http://localhost:8080/api/employee/' + props.empNo + '/salary')
+        const res = await axios.get('http://localhost:3000/api/employee/' + props.empNo + '/salary')
         if(!unmounted)
           setDatas(res.data);     
       } catch (e) {        
@@ -54,17 +54,21 @@ function ReviseSalary(props) {
         <TableContainer className={classes.container}>     
         <Table stickyHeader>
             <TableHead>
+              <TableRow>
                 <TableCell align="center">연봉</TableCell>
                 <TableCell align="center">시작일</TableCell>
                 <TableCell align="center">종료일</TableCell>
+                </TableRow>
             </TableHead>
+            <TableBody>
                 {datas.content.map((text) => (
-                    <TableBody>
+                    <TableRow key={text.salary}>
                     <TableCell align="center">${text.salary}</TableCell>
                     <TableCell align="center">{text.fromDate}</TableCell>
-                    <TableCell align="center">{text.toDate === '9999-01-01' ? '현재' : text.toDate}</TableCell>
-                    </TableBody>
+                    <TableCell align="center">{text.toDate === '9999-01-01' ? '~' : text.toDate}</TableCell>
+                    </TableRow>
                 ))}
+            </TableBody>
         </Table>
         </TableContainer>   
         </Paper>

@@ -21,7 +21,7 @@ function Home(props){
 
     useEffect(() => {                       
         dispatch(actions.navigation(1));
-        //오류 발생하는데 먼지 모르겟슴
+
         return () => {//clean up    
             dispatch(actions.init());          
         }

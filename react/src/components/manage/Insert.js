@@ -28,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
   },
   }));
 
+function dateFormatting(date) {
+  let Fdate = date;
+  if(Fdate < 10) Fdate = '0' + Fdate;
+  return Fdate;
+}
+
 function Insert() {
 
 const [birthDate, setBirthDate] = useState(new Date());
@@ -35,15 +41,19 @@ const [hireDate, setHireDate] = useState(new Date());
 const [firstName, setFirstName] = useState('');
 const [lastName, setLastName] = useState('');
 const [gender, setGender] = useState('M');
-const [depNo, setDepNo] = useState('d009');
+const [deptNo, setDeptNo] = useState('d009');
 const [title, setTitle] = useState('Staff');
 const [salary, setSalary] = useState(0);
+const [buttonValidation, setButtonValidation] = useState(true);
+const [firstValid, setFirstValid] = useState(false);
+const [lastValid, setLastValid] = useState(false);
+const [salaryValid, setSalaryValid] = useState(false);
 
 const [expanded, setExpanded] = useState(false);
 
 const [state, setState] = useState({
   gender: 'M',
-  depNo: 'd009',
+  deptNo: 'd009',
   title: 'Staff',
   firstName: '',
   lastName: '',
@@ -66,10 +76,10 @@ const handleGenderChange = (event) => {
   })
 }
 const handleDepartmentChange = (event) => {
-  setDepNo(event.target.value);
+  setDeptNo(event.target.value);
   setState({
     ...state,
-    depNo: event.target.value,
+    deptNo: event.target.value,
   })
 }
 const handleTitleChange = (event) => {
@@ -80,13 +90,14 @@ const handleTitleChange = (event) => {
   })
 }
 
-const handleInput = (event) => {
-  const birth = birthDate.getFullYear() + '/' + birthDate.getMonth() + 1 + '/' + birthDate.getDate();
-  const hire = birthDate.getFullYear() + '/' + birthDate.getMonth() + '/' + birthDate.getDate();
+const handleInput = (event) => { 
+
+  const birth = birthDate.getFullYear() + '-' + dateFormatting((birthDate.getMonth() + 1)) + '-' + dateFormatting(birthDate.getDate());
+  const hire = hireDate.getFullYear() + '-' + dateFormatting((hireDate.getMonth() + 1))  + '-' + dateFormatting(hireDate.getDate());
   setState({
     ...state,
     gender: gender,
-    depNo: depNo,
+    deptNo: deptNo,
     title: title,
     firstName: firstName,
     lastName: lastName,
@@ -117,7 +128,11 @@ const classes = useStyles();
                 <Typography>
                   FirstName
                 </Typography>
-                <TextField required id="firstName" label="Required" onChange={(e) => setFirstName(e.target.value) } />
+                <TextField required id="firstName" label="Required" onChange={(e) => {
+                  setFirstName(e.target.value);
+                  if(e.target.value.length > 0) setFirstValid(true);
+                  else setFirstValid(false);
+                  }} />
               </Card>  
             </Grid>  
             <Grid item md>      
@@ -125,7 +140,11 @@ const classes = useStyles();
                 <Typography>
                   LastName
                 </Typography>
-                <TextField required id="LastName" label="Required" onChange={(e) => setLastName(e.target.value) } />
+                <TextField required id="LastName" label="Required" onChange={(e) => {
+                  setLastName(e.target.value)
+                  if(e.target.value.length > 0) setLastValid(true);
+                  else setLastValid(false);
+                  }} />
               </Card>
             </Grid>
           <Grid item md>
@@ -157,7 +176,7 @@ const classes = useStyles();
                   margin="normal"
                   id="birth-picker"
                   label="Date"
-                  format="yyyy/MM/dd"
+                  format="yyyy-MM-dd"
                   maxDate={new Date()}
                   value={birthDate}
                   onChange={(date) => setBirthDate(date)}
@@ -179,8 +198,8 @@ const classes = useStyles();
                 <InputLabel htmlFor="department-select"/>
                 <Select
                   native
-                  value={depNo}
-                  onChange={(e) => setDepNo(e.target.value)}
+                  value={deptNo}
+                  onChange={(e) => setDeptNo(e.target.value)}
                   >
                     <option aria-label="None" value="d009">Customer Service</option>
                     <option value="d005">Development</option>
@@ -213,7 +232,7 @@ const classes = useStyles();
                     <option value="Engineer">Engineer</option>
                     <option value="Technique Leader">Technique Leader</option>
                     <option value="Senior Staff">Senior Staff</option>
-                    <option value="Senioir Engineer">Senioir Engineer</option>
+                    <option value="Senioir Engineer">Senior Engineer</option>
                   </Select>
               </FormControl>
             </Card>
@@ -229,7 +248,7 @@ const classes = useStyles();
                   margin="normal"
                   id="hire-picker"
                   label="Date"
-                  format="yyyy/MM/dd"
+                  format="yyyy-MM-dd"
                   maxDate={new Date()}
                   value={hireDate}
                   onChange={(date) => setHireDate(date)}
@@ -245,16 +264,20 @@ const classes = useStyles();
               <Typography>
                 Salary
               </Typography>
-              <TextField required id="salary" label="Required" type="number" onChange={(e) => setSalary(e.target.value)}/>
+              <TextField required id="salary" label="Required" type="number" onChange={(e) => {
+                setSalary(e.target.value)
+                if(e.target.value.length > 0) setSalaryValid(true);
+                else setSalaryValid(false);
+                }}/>
             </Card>
           </Grid>         
         </Grid>
         </CardContent>  
-        <Button className={classes.button} variant="contained" color="primary" onClick={() => {
+        <Button className={classes.button} variant="contained" color="primary" disabled={!(firstValid && lastValid && salaryValid)}
+        onClick={() => {
           handleInput();
           setExpanded(!expanded);
           }} >생성</Button>     
-
       { expanded === true &&
       <Backdrop className={classes.backdrop} open={expanded} >
         <Card>

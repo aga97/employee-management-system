@@ -9,8 +9,11 @@ import ReviseTitle from './ReviseTitle';
 import ReviseSalary from './ReviseSalary';
 import { Close } from '@material-ui/icons';
 import {Loading} from "./theme/loading";
-import { Grid, TableFilterRow, TableHeaderRow, VirtualTable } from '@devexpress/dx-react-grid-material-ui';
-import { createRowCache, DataTypeProvider, FilteringState, SortingState, VirtualTableState } from '@devexpress/dx-react-grid';
+import { Grid, Table, TableFilterRow, TableHeaderRow, VirtualTable } from '@devexpress/dx-react-grid-material-ui';
+import { createRowCache, DataTypeProvider, EditingState, FilteringState, SortingState, TableEditColumn, TableEditRow, VirtualTableState } from '@devexpress/dx-react-grid';
+import { styles } from '@material-ui/pickers/views/Calendar/Calendar';
+import { AppBar, Backdrop, Button, Card, CardContent, CardHeader, IconButton, Tab, Tabs } from '@material-ui/core';
+import Editing from './Editing';
 
 
 const VIRTUAL_PAGE_SIZE = 100;
@@ -133,6 +136,9 @@ function TabPanel(props) {
       )}
       {value === 3 && (
         <ReviseSalary empNo={empNo} />
+      )}
+      {value === 4 && (
+        <Editing empNo={empNo} />
       )}
     </div>
   );
@@ -257,20 +263,22 @@ export default function Human() {
     dispatch({ type: 'CHANGE_SORTING', payload: value });
   };
 
-  const handleChangePage = (event, newPage) => {  
-    dispatch(actions.changeSearch({
-      ...search.params,
-      page : newPage,
-    }))
-  };
 
-  const handleChangeRowsPerPage = (event) => {
-    dispatch(actions.changeSearch({
-      ...search.params,
-      size: parseInt(event.target.value, 10),
-      page:0,
-    }))
-  };
+  const clickBackdrop = ({ row, ...restProps }) => (
+    <Table.Row
+      hover
+      {...restProps}
+      // eslint-disable-next-line no-alert
+      // onClick={() => alert(JSON.stringify(row))}
+      onClick={() => {
+        setExpanded(!expanded);
+        setRevEmp(row.empNo);
+      }}
+      style={{
+        cursor: 'pointer',
+      }}
+    />
+  );
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -284,7 +292,7 @@ export default function Human() {
 
   return (    
     <Paper  style={{width:'99.8%'}}/* 사이즈 자동조절이 잘안되서 width 지정 */>
-      <Grid rows={rows} columns={columns} getRowId={getRowId}>
+      <Grid rows={rows} columns={columns} getRowId={getRowId} > 
           <CurrencyTypeProvider for={currencyColumn} />
           <VirtualTableState 
           infiniteScrolling         
@@ -297,42 +305,47 @@ export default function Human() {
           <SortingState
             sorting={sorting}
             onSortingChange={changeSorting}
+            columnExtensions={sortingStateColumnExtensions}
           />
           <FilteringState
             filters={filters}
             onFiltersChange={changeFilters}
+            columnExtensions={filteringStateColumnExtensions}
           />
-          <VirtualTable/>
+          <VirtualTable rowComponent={clickBackdrop}/>
           <TableHeaderRow showSortingControls/>
           <TableFilterRow />
+         
       </Grid>
     {loading && <Loading/>}
    
-    {/* { expanded !== false &&
+    {expanded !== false &&
       <Backdrop className={classes.backdrop} open={expanded} >
-      <Card>
+      <Card >
         <CardHeader action={
         <IconButton onClick={() => {
           setExpanded(false)
           setTabIndex(0);
           }}><Close/></IconButton>}/>
-        <CardContent >
-          <AppBar position="static" >
+        <CardContent>
+          <AppBar position="static">
             <Tabs value={tabIndex} onChange={handleTabChange}>
               <Tab label="기본 정보" />
               <Tab label="부서 내역" />
               <Tab label="직책 내역" />
               <Tab label="연봉 내역" />
+              <Tab label="수정" />
             </Tabs>
           </AppBar>
           <TabPanel empNo={revEmp} value={tabIndex} index={0}/>
           <TabPanel empNo={revEmp} value={tabIndex} index={1}/>
           <TabPanel empNo={revEmp} value={tabIndex} index={2}/>
           <TabPanel empNo={revEmp} value={tabIndex} index={3}/>
+          <TabPanel empNo={revEmp} value={tabIndex} index={4}/>
         </CardContent>
       </Card>
     </Backdrop>
-    } */}
+    }
      </Paper>
 
   );
