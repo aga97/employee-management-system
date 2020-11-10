@@ -38,6 +38,7 @@ public class EmpDto {
             private LocalDate birthDate;
             private Gender gender;
             private LocalDate hireDate;
+            private String deptNo;
             private String deptName;
             private String title;
             private Integer Salary;

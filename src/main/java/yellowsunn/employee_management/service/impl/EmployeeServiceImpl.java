@@ -95,7 +95,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .hireDate(employee.getHireDate());
 
             deptEmpRepository.findLatestByEmployee(employee).ifPresent(deptEmp -> {
-                contentBuilder.deptName(deptEmp.getDepartment().getDeptName());
+                contentBuilder
+                        .deptNo(deptEmp.getDepartment().getDeptNo())
+                        .deptName(deptEmp.getDepartment().getDeptName());
 
                 // 은퇴한 경우
                 if (!deptEmp.getToDate().isAfter(LocalDate.now())) {
