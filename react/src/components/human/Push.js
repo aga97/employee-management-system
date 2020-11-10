@@ -32,7 +32,7 @@ function Push(props) {
       try {           
         setDatas(null);
         setLoading(true);        
-        const res = await axios.post('http://localhost:3000/api/employee/create/', props.revise )
+        const res = await axios.put('http://localhost:3000/api/employee/update/', props.revise )
         if(!unmounted)
           setDatas(res.data);     
       } catch (e) {        

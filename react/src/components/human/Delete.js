@@ -32,7 +32,7 @@ function Delete(props) {
       try {           
         setDatas(null);
         setLoading(true);        
-        const res = await axios.get('http://localhost:3000/api/employee/delete/' + props.empNo )
+        const res = await axios.delete('http://localhost:3000/api/employee/delete/' + props.empNo )
         if(!unmounted)
           setDatas(res.data);     
       } catch (e) {        
