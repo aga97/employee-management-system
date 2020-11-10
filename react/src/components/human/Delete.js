@@ -1,21 +1,21 @@
-import { CircularProgress, makeStyles } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
- root: {
-   backgroundColor : theme.palette.background.default,
- },
- paper: {
-  padding : theme.spacing(1),
-  marginBottom : theme.spacing(1),
- },
- retire: {
-  padding : theme.spacing(1),
-  marginTop : theme.spacing(1),
-  marginBottom : theme.spacing(1),
- },
-}));
+// const useStyles = makeStyles((theme) => ({
+//  root: {
+//    backgroundColor : theme.palette.background.default,
+//  },
+//  paper: {
+//   padding : theme.spacing(1),
+//   marginBottom : theme.spacing(1),
+//  },
+//  retire: {
+//   padding : theme.spacing(1),
+//   marginTop : theme.spacing(1),
+//   marginBottom : theme.spacing(1),
+//  },
+// }));
 
 
 function Delete(props) {
@@ -24,7 +24,7 @@ function Delete(props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const classes = useStyles();
+  //const classes = useStyles();
   
   useEffect(() => {
     let unmounted = false;

@@ -1,5 +1,5 @@
 import 'date-fns';
-import { AppBar, Backdrop, Button, Card, CardContent, CardHeader, FormControl, Grid, IconButton, InputLabel, makeStyles, Paper, Select, TextField, Typography } from '@material-ui/core';
+import { AppBar, Backdrop, Button, Card, CardContent, CardHeader, FormControl, Grid, IconButton, InputLabel, makeStyles, Select, TextField, Typography } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React, { useState } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
@@ -44,7 +44,6 @@ const [gender, setGender] = useState('M');
 const [deptNo, setDeptNo] = useState('d009');
 const [title, setTitle] = useState('Staff');
 const [salary, setSalary] = useState(0);
-const [buttonValidation, setButtonValidation] = useState(true);
 const [firstValid, setFirstValid] = useState(false);
 const [lastValid, setLastValid] = useState(false);
 const [salaryValid, setSalaryValid] = useState(false);
@@ -61,34 +60,6 @@ const [state, setState] = useState({
   birthDate: '',
   hireDate: '',
 })
-
-const handleBirthChange = (event, date) => {
-  setBirthDate(date);
-};
-const handleHireChange = (date) => {
-  setHireDate(date);
-};
-const handleGenderChange = (event) => {
-  setGender(event.target.value);
-  setState({
-    ...state,
-    gender: event.target.value,
-  })
-}
-const handleDepartmentChange = (event) => {
-  setDeptNo(event.target.value);
-  setState({
-    ...state,
-    deptNo: event.target.value,
-  })
-}
-const handleTitleChange = (event) => {
-  setTitle(event.target.value);
-  setState({
-    ...state,
-    title: event.target.value,
-  })
-}
 
 const handleInput = (event) => { 
 

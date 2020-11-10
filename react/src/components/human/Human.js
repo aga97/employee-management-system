@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import { useDispatch, useSelector } from 'react-redux';
-import * as actions from '../../actions';
 import Revise from './Revise';
 import ReviseDept from './ReviseDept';
 import ReviseTitle from './ReviseTitle';
@@ -10,9 +8,8 @@ import ReviseSalary from './ReviseSalary';
 import { Close } from '@material-ui/icons';
 import {Loading} from "./theme/loading";
 import { Grid, Table, TableFilterRow, TableHeaderRow, VirtualTable } from '@devexpress/dx-react-grid-material-ui';
-import { createRowCache, DataTypeProvider, EditingState, FilteringState, SortingState, TableEditColumn, TableEditRow, VirtualTableState } from '@devexpress/dx-react-grid';
-import { styles } from '@material-ui/pickers/views/Calendar/Calendar';
-import { AppBar, Backdrop, Button, Card, CardContent, CardHeader, IconButton, Tab, Tabs } from '@material-ui/core';
+import { createRowCache, DataTypeProvider, FilteringState, SortingState, VirtualTableState } from '@devexpress/dx-react-grid';
+import { AppBar, Backdrop, Card, CardContent, CardHeader, IconButton, Tab, Tabs } from '@material-ui/core';
 import Editing from './Editing';
 
 
@@ -170,11 +167,8 @@ export default function Human() {
   ]);
   const [currencyColumn] = useState(['salary']);
 
-  const cache = useMemo(() => createRowCache(VIRTUAL_PAGE_SIZE), [VIRTUAL_PAGE_SIZE]);
+  const cache = useMemo(() => createRowCache(VIRTUAL_PAGE_SIZE), []);
 
-  const { search } = useSelector((state) => ({
-    search: state.changeSearch,
-  }))
 
   const [sortingStateColumnExtensions] = useState([
       {columnName: 'gender', sortingEnabled: false},
@@ -231,7 +225,7 @@ export default function Human() {
 
   const loadData = () => {
     const {
-      requestedSkip, size, lastQuery, loading, forceReload, totalCount,
+      requestedSkip, size, lastQuery, loading, forceReload,
     } = state;
     const query = buildQueryString();
     if ((query !== lastQuery || forceReload) && !loading) {
@@ -337,11 +331,7 @@ export default function Human() {
               <Tab label="수정" />
             </Tabs>
           </AppBar>
-          <TabPanel empNo={revEmp} value={tabIndex} index={0}/>
-          <TabPanel empNo={revEmp} value={tabIndex} index={1}/>
-          <TabPanel empNo={revEmp} value={tabIndex} index={2}/>
-          <TabPanel empNo={revEmp} value={tabIndex} index={3}/>
-          <TabPanel empNo={revEmp} value={tabIndex} index={4}/>
+          <TabPanel empNo={revEmp} value={tabIndex} index={tabIndex}/>
         </CardContent>
       </Card>
     </Backdrop>

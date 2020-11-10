@@ -1,5 +1,4 @@
 import { Button, Chip, CircularProgress, FormControl, Grid, InputLabel, makeStyles, Paper, Select, Snackbar, TextField } from '@material-ui/core';
-import { Restaurant } from '@material-ui/icons';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Delete from './Delete';
