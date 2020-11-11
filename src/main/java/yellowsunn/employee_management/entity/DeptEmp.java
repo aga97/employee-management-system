@@ -8,7 +8,8 @@ import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor @Builder
+@AllArgsConstructor
+@Builder
 @Getter
 public class DeptEmp {
 
@@ -30,4 +31,11 @@ public class DeptEmp {
 
     @Column(nullable = false)
     private LocalDate toDate;
+
+    public void changeToDateNow() {
+        // toDate가 9999-01-01인 경우만 change
+        if (toDate.isEqual(LocalDate.of(9999, 1, 1))) {
+            this.toDate = LocalDate.now();
+        }
+    }
 }

@@ -82,17 +82,42 @@ public class EmployeeApiController {
 
         // 유효성 검사 오류
         if (bindingResult.hasErrors()) {
-            success = new EmpDto.Success();
-            success.setSuccess(false);
-            return success;
+            return EmpDto.Success.builder()
+                    .success(false)
+                    .build();
         }
 
         try {
             success = employeeService.create(dto);
         } catch (Exception e) {
             e.printStackTrace();
-            success = new EmpDto.Success();
-            success.setSuccess(false);
+            return EmpDto.Success.builder()
+                    .success(false)
+                    .build();
+        }
+        return success;
+    }
+
+    @PutMapping("/api/employee/update")
+    public EmpDto.Success update(@RequestBody @Valid EmpDto.Update dto, BindingResult bindingResult) {
+        EmpDto.Success success;
+
+        // 유효성 검사 오류
+        if (bindingResult.hasErrors()) {
+            return EmpDto.Success.builder()
+                    .success(false)
+                    .error("Salary must be greater than 0")
+                    .build();
+        }
+
+        try {
+            success = employeeService.update(dto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return EmpDto.Success.builder()
+                    .success(false)
+                    .error(e.getMessage())
+                    .build();
         }
         return success;
     }

@@ -36,4 +36,9 @@ public interface EmployeeService {
      * 직원 생성
      */
     EmpDto.Success create(EmpDto.Create dto);
+
+    /**
+     * 직원 정보 수정
+     */
+    EmpDto.Success update(EmpDto.Update dto);
 }

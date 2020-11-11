@@ -2,6 +2,7 @@ package yellowsunn.employee_management.repository.custom;
 
 import org.springframework.data.domain.Sort;
 import yellowsunn.employee_management.entity.Employee;
+import yellowsunn.employee_management.entity.Salary;
 import yellowsunn.employee_management.entity.Title;
 
 import java.util.Collection;
@@ -16,7 +17,7 @@ public interface TitleRepositoryCustom {
     List<Title> findLatestByEmployeeIn(Collection<Employee> employees);
 
     /**
-     * 주어진 현직 직원들의 현재 Title 를 반환한다.
+     * 주어진 직원들의 현재 Title 를 반환한다. (퇴사한 직원 반환 X)
      */
     List<Title> findCurrentByEmployeeIn(Collection<Employee> employees);
 
@@ -32,7 +33,14 @@ public interface TitleRepositoryCustom {
     Optional<Title> findLatestByEmployee(Employee employee);
 
     /**
+     * 특정 직원의 현재 Title 을 반환한다. (퇴사한 직원 반환 X)
+     */
+    Optional<Title> findCurrentByEmployee(Employee employee);
+
+    /**
      * 모든 직책 목록을 반환한다.
      */
     List<String> findTitles(Sort sort);
+
+    <S extends Title> void persist(S entity);
 }

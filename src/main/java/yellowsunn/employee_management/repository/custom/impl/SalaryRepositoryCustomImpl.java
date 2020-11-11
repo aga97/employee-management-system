@@ -25,8 +25,10 @@ import static yellowsunn.employee_management.entity.QTitle.title;
 public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     public SalaryRepositoryCustomImpl(EntityManager em) {
+        this.em = em;
         queryFactory = new JPAQueryFactory(em);
     }
 
@@ -94,6 +96,23 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     }
 
     @Override
+    public Optional<Salary> findCurrentByEmployee(Employee employee) {
+        if (employee != null) {
+            QSalary salary = new QSalary("salary");
+
+            Salary findSalary = queryFactory
+                    .selectFrom(salary)
+                    .where(salary.employee.eq(employee),
+                            salary.toDate.eq(LocalDate.of(9999, 1, 1)))
+                    .fetchOne();
+
+            return Optional.ofNullable(findSalary);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo) {
         // 재직 중임을 나타낸다.
         LocalDate inService = LocalDate.of(9999, 1, 1);
@@ -138,5 +157,11 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
         });
 
         return salaryInfoList;
+    }
+
+    @Override
+    @Transactional
+    public <S extends Salary> void persist(S entity) {
+        em.persist(entity);
     }
 }

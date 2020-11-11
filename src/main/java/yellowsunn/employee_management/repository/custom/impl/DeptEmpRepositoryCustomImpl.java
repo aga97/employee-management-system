@@ -30,8 +30,10 @@ import static yellowsunn.employee_management.entity.QEmployee.employee;
 public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     public DeptEmpRepositoryCustomImpl(EntityManager em) {
+        this.em = em;
         queryFactory = new JPAQueryFactory(em);
     }
 
@@ -125,6 +127,22 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
     }
 
     @Override
+    public Optional<DeptEmp> findCurrentByEmployee(Employee employee) {
+        if (employee != null) {
+            DeptEmp findDeptEmp = queryFactory
+                    .selectFrom(deptEmp)
+                    .join(deptEmp.department).fetchJoin()
+                    .where(deptEmp.employee.eq(employee),
+                            deptEmp.toDate.eq(LocalDate.of(9999, 1, 1)))
+                    .fetchOne();
+
+            return Optional.ofNullable(findDeptEmp);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<DeptEmp> findByEmployee(Employee employee) {
         if (employee == null) {
             return new ArrayList<>();
@@ -145,6 +163,12 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                 .where(deptEmp.department.deptNo.eq(deptNo),
                         deptEmp.toDate.eq(LocalDate.of(9999, 1, 1)))
                 .fetchCount();
+    }
+
+    @Override
+    @Transactional
+    public <S extends DeptEmp> void persist(S entity) {
+        em.persist(entity);
     }
 
     /**

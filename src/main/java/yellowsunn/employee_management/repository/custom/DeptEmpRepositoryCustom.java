@@ -17,7 +17,7 @@ public interface DeptEmpRepositoryCustom {
     Slice<DeptEmp> findByCondition(EmpSearchDto.Condition condition, Pageable pageable);
 
     /**
-     * 주어진 조건에서 현직 직원들의 DeptEmp 를 반환한다. (직원별로 현재 부서만 반환)
+     * 주어진 조건에서 직원들의 DeptEmp 를 반환한다. (퇴사한 직원 반환 X)
      */
     Slice<DeptEmp> findCurrentByCondition(EmpSearchDto.Condition condition, Pageable pageable);
 
@@ -25,6 +25,11 @@ public interface DeptEmpRepositoryCustom {
      * 특정 직원의 DeptEmp 를 반환한다. (가장 최근 부서만 반환)
      */
     Optional<DeptEmp> findLatestByEmployee(Employee employee);
+
+    /**
+     * 특정 직원의 현재 DeptEmp를 반환한다. (퇴사한 직원 반환 X)
+     */
+    Optional<DeptEmp> findCurrentByEmployee(Employee employee);
 
     /**
      * 특정 직원의 DeptEmp를 반환한다.
@@ -35,4 +40,6 @@ public interface DeptEmpRepositoryCustom {
      * 부서별 현직 직원들의 총인원를 구한다.
      */
     long countCurrentByDeptNo(String deptNo);
+
+    <S extends DeptEmp> void persist(S entity);
 }
