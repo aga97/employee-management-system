@@ -127,9 +127,30 @@ public class EmpDto {
     }
 
     @Data
+    public static class Update {
+        @Valid
+        private Content content;
+        private boolean deptNo;
+        private boolean title;
+        private boolean salary;
+        
+        @Data
+        public static class Content {
+            private Integer empNo;
+            private String deptNo;
+            private String title;
+            @Positive private Integer Salary;
+        }
+    }
+
+    @Data
+    @Builder
     public static class Success {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Integer empNo;
         private boolean success;
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private String error;
     }
 }

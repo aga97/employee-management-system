@@ -200,7 +200,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // 부서에 현직 매니저가 있는지 확인
-        if (content.getTitle().equals("manager")) {
+        if (content.getTitle().equals("Manager")) {
             if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
                 throw new IllegalStateException("Manager is already exists.");
             }
@@ -245,10 +245,123 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .toDate(LocalDate.of(9999, 1, 1))
                 .build());
 
+        return EmpDto.Success.builder()
+                .empNo(employee.getEmpNo())
+                .success(true)
+                .build();
+    }
 
-        EmpDto.Success success = new EmpDto.Success();
-        success.setEmpNo(employee.getEmpNo());
-        success.setSuccess(true);
-        return success;
+    @Override
+    @Transactional
+    public EmpDto.Success update(EmpDto.Update dto) {
+        EmpDto.Update.Content content = dto.getContent();
+        Optional<Employee> empOptional = employeeRepository.findById(content.getEmpNo());
+
+        if (empOptional.isEmpty()) {
+            throw new IllegalStateException("The employee could not be found.");
+        }
+        Employee employee = empOptional.get();
+
+        if (!dto.isDeptNo() && !dto.isTitle() && !dto.isSalary()) {
+            return EmpDto.Success.builder()
+                    .success(false)
+                    .build();
+        }
+
+        // 변화 감지
+        if (dto.isDeptNo()) updateDepartment(content, employee);
+        if (dto.isTitle()) updateTitle(content, employee);
+        if (dto.isSalary()) updateSalary(content, employee);
+
+        return EmpDto.Success.builder()
+                .success(true)
+                .build();
+    }
+
+    private void updateDepartment(EmpDto.Update.Content content, Employee employee) {
+        Optional<Department> deptOptional = departmentRepository.findById(content.getDeptNo());
+        Optional<DeptEmp> deptEmpOptional = deptEmpRepository.findCurrentByEmployee(employee);
+        if (deptOptional.isEmpty()) {
+            throw new IllegalStateException("Invalid department.");
+        }
+        if (deptEmpOptional.isEmpty()) {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        }
+
+        DeptEmp deptEmp = deptEmpOptional.get();
+        if (content.getDeptNo().equals(deptEmp.getDepartment().getDeptNo())) {
+            throw new IllegalStateException("The department has not changed.");
+        }
+        // 매니저로 변경하고자 할때 해당 부서에 이미 매니저가 있는지 확인
+        if (content.getTitle().equals("Manager")) {
+            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
+                throw new IllegalStateException("Manager is already exists.");
+            }
+        }
+
+        deptEmp.changeToDateNow();
+        deptEmpRepository.persist(DeptEmp.builder()
+                .id(DeptEmpId.builder()
+                        .empNo(deptEmp.getEmployee().getEmpNo())
+                        .deptNo(deptOptional.get().getDeptNo())
+                        .build())
+                .employee(employee)
+                .department(deptOptional.get())
+                .fromDate(LocalDate.now())
+                .toDate(LocalDate.of(9999, 1, 1))
+                .department(deptOptional.get())
+                .build());
+    }
+
+    private void updateTitle(EmpDto.Update.Content content, Employee employee) {
+        Optional<Title> titleOptional = titleRepository.findCurrentByEmployee(employee);
+        if (titleOptional.isEmpty()) {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        }
+
+        Title title = titleOptional.get();
+        if (content.getTitle().equals(title.getId().getTitle())) {
+            throw new IllegalStateException("The Title has not changed.");
+        }
+        // 매니저로 변경하고자 할때 부서에 이미 매니저가 있는지 확인
+        if (content.getTitle().equals("Manager")) {
+            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
+                throw new IllegalStateException("Manager is already exists.");
+            }
+        }
+
+        title.changeToDateNow();
+        titleRepository.persist(Title.builder()
+                .id(TitleId.builder()
+                        .empNo(title.getEmployee().getEmpNo())
+                        .title(content.getTitle())
+                        .fromDate(LocalDate.now())
+                        .build())
+                .employee(employee)
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
+    }
+
+    private void updateSalary(EmpDto.Update.Content content, Employee employee) {
+        Optional<Salary> salaryOptional = salaryRepository.findCurrentByEmployee(employee);
+        if (salaryOptional.isEmpty()) {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        }
+
+        Salary salary = salaryOptional.get();
+        if (content.getSalary() == salary.getSalary()) {
+            throw new IllegalStateException("The salary has not changed.");
+        }
+
+        salary.changeToDateNow();
+        salaryRepository.persist(Salary.builder()
+                .id(SalaryId.builder()
+                        .empNo(salary.getEmployee().getEmpNo())
+                        .fromDate(LocalDate.now())
+                        .build())
+                .employee(employee)
+                .salary(content.getSalary())
+                .toDate(LocalDate.of(9999, 1, 1))
+                .build());
     }
 }

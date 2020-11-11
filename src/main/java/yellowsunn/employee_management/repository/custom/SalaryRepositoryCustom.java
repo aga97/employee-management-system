@@ -17,7 +17,7 @@ public interface SalaryRepositoryCustom {
     List<Salary> findLatestByEmployeeIn(Collection<Employee> employees);
 
     /**
-     * 주어진 현직 직원들의 현재 Salary 를 반환한다.
+     * 주어진 직원들의 현재 Salary 를 반환한다. (퇴사한 직원 반환 X)
      */
     List<Salary> findCurrentByEmployeeIn(Collection<Employee> employees);
 
@@ -33,7 +33,14 @@ public interface SalaryRepositoryCustom {
     Optional<Salary> findLatestByEmployee(Employee employee);
 
     /**
+     * 특정 직원의 현재 Salary 를 반환한다. (퇴사한 직원 반환 X)
+     */
+    Optional<Salary> findCurrentByEmployee(Employee employee);
+
+    /**
      * 부서별 현직 직원들의 직책별 연봉 정보를 반환한다.
      */
     List<DeptDto.SalaryInfo> findCurByDeptNoGroupByTitle(String deptNo);
+
+    <S extends Salary> void persist(S entity);
 }

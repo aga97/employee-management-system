@@ -26,8 +26,10 @@ import static yellowsunn.employee_management.entity.QTitle.title;
 public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     public TitleRepositoryCustomImpl(EntityManager em) {
+        this.em = em;
         queryFactory = new JPAQueryFactory(em);
     }
 
@@ -72,15 +74,30 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
     public Optional<Title> findLatestByEmployee(Employee employee) {
         if (employee != null) {
             Title findTitle = queryFactory
-                    .selectFrom(QTitle.title)
-                    .where(QTitle.title.employee.eq(employee),
-                            QTitle.title.toDate.eq(
+                    .selectFrom(title)
+                    .where(title.employee.eq(employee),
+                            title.toDate.eq(
                                     select(deptEmp.toDate.max())
                                             .from(deptEmp)
                                             .where(deptEmp.employee.eq(employee))
                                             .groupBy(deptEmp.employee)
                             )
                     ).fetchOne();
+            return Optional.ofNullable(findTitle);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Title> findCurrentByEmployee(Employee employee) {
+        if (employee != null) {
+            Title findTitle = queryFactory
+                    .selectFrom(QTitle.title)
+                    .where(QTitle.title.employee.eq(employee),
+                            QTitle.title.toDate.eq(LocalDate.of(9999, 1, 1)))
+                    .fetchOne();
+
             return Optional.ofNullable(findTitle);
         } else {
             return Optional.empty();
@@ -103,5 +120,11 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
         });
 
         return query.fetch();
+    }
+
+    @Override
+    @Transactional
+    public <S extends Title> void persist(S entity) {
+        em.persist(entity);
     }
 }
