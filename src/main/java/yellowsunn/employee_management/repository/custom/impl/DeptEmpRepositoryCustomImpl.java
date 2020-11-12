@@ -3,7 +3,7 @@ package yellowsunn.employee_management.repository.custom.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
@@ -51,9 +51,9 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                         empNoStartsWith(condition.getEmpNo()),
                         firstNameStartsWith(condition.getFirstName()),
                         lastNameStartsWith(condition.getLastName()),
-                        deptNoEq(condition.getDeptNo()),
+                        deptNameStartsWith(condition.getDeptName()),
                         genderEq(condition.getGender()),
-                        birthDateEq(condition.getBirthDate()),
+                        birthDateStartsWith(condition.getBirthDate()),
                         hireDateEq(condition.getHireDate()),
 
                         Expressions.list(deptEmp.employee, deptEmp.fromDate, deptEmp.toDate)
@@ -87,9 +87,9 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                         empNoStartsWith(condition.getEmpNo()),
                         firstNameStartsWith(condition.getFirstName()),
                         lastNameStartsWith(condition.getLastName()),
-                        deptNoEq(condition.getDeptNo()),
+                        deptNameStartsWith(condition.getDeptName()),
                         genderEq(condition.getGender()),
-                        birthDateEq(condition.getBirthDate()),
+                        birthDateStartsWith(condition.getBirthDate()),
                         hireDateEq(condition.getHireDate())
                 )
                 .offset(pageable.getOffset())
@@ -112,8 +112,8 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                     .selectFrom(deptEmp)
                     .join(deptEmp.department).fetchJoin()
                     .where(deptEmp.employee.eq(employee),
-                            deptEmp.toDate.eq(
-                                    select(subDeptEmp.toDate.max())
+                            Expressions.list(deptEmp.fromDate, deptEmp.toDate).in(
+                                    select(subDeptEmp.fromDate.max(), subDeptEmp.toDate.max())
                                             .from(subDeptEmp)
                                             .where(subDeptEmp.employee.eq(employee))
                                             .groupBy(subDeptEmp.employee)
@@ -218,8 +218,8 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         return gender != null ? employee.gender.eq(gender) : null;
     }
 
-    private BooleanExpression deptNoEq(String deptNo) {
-        return StringUtils.hasText(deptNo) ? deptEmp.id.deptNo.eq(deptNo) : null;
+    private BooleanExpression deptNameStartsWith(String deptName) {
+        return StringUtils.hasText(deptName) ? department.deptName.startsWith(deptName) : null;
     }
 
     private BooleanExpression firstNameStartsWith(String firstName) {
@@ -230,8 +230,8 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
         return StringUtils.hasText(lastName) ? employee.lastName.startsWith(lastName) : null;
     }
 
-    private BooleanExpression birthDateEq(LocalDate birthDate) {
-        return birthDate != null ? employee.birthDate.eq(birthDate) : null;
+    private BooleanExpression birthDateStartsWith(String birthDate) {
+        return birthDate != null ? employee.birthDate.stringValue().startsWith(birthDate) : null;
     }
 
     private BooleanExpression hireDateEq(LocalDate hireDate) {

@@ -10,6 +10,7 @@ import yellowsunn.employee_management.dto.EmpDto;
 import yellowsunn.employee_management.dto.EmpSearchDto;
 import yellowsunn.employee_management.entity.*;
 import yellowsunn.employee_management.entity.id.DeptEmpId;
+import yellowsunn.employee_management.entity.id.DeptManagerId;
 import yellowsunn.employee_management.entity.id.SalaryId;
 import yellowsunn.employee_management.entity.id.TitleId;
 import yellowsunn.employee_management.repository.*;
@@ -268,10 +269,43 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .build();
         }
 
+        // 연봉, 부서, 직책은 각각 하루에 한번만 변경허용
+        validateOnce(dto, employee);
+
         // 변화 감지
+        if (dto.isSalary()) updateSalary(content, employee);
+        updateDeptManager(dto, employee, deptManagerRepository.findCurrentByEmployee(employee)); //매니저에서 변경하거나, 매니저로 변경하는 경우 deptManager 수정
         if (dto.isDeptNo()) updateDepartment(content, employee);
         if (dto.isTitle()) updateTitle(content, employee);
-        if (dto.isSalary()) updateSalary(content, employee);
+
+        return EmpDto.Success.builder()
+                .success(true)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public EmpDto.Success retire(Integer empNo) {
+        Optional<Employee> empOptional = employeeRepository.findById(empNo);
+        if (empOptional.isEmpty()) {
+            throw new IllegalStateException("The employee could not be found.");
+        }
+        Employee employee = empOptional.get();
+
+        deptEmpRepository.findCurrentByEmployee(employee).ifPresentOrElse(DeptEmp::changeToDateNow, () -> {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        });
+
+        titleRepository.findCurrentByEmployee(employee).ifPresentOrElse(Title::changeToDateNow, () -> {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        });
+
+        salaryRepository.findCurrentByEmployee(employee).ifPresentOrElse(Salary::changeToDateNow, () -> {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        });
+
+        // 매니저인 경우
+        deptManagerRepository.findCurrentByEmployee(employee).ifPresent(DeptManager::changeToDateNow);
 
         return EmpDto.Success.builder()
                 .success(true)
@@ -292,12 +326,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (content.getDeptNo().equals(deptEmp.getDepartment().getDeptNo())) {
             throw new IllegalStateException("The department has not changed.");
         }
-        // 매니저로 변경하고자 할때 해당 부서에 이미 매니저가 있는지 확인
-        if (content.getTitle().equals("Manager")) {
-            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
-                throw new IllegalStateException("Manager is already exists.");
-            }
-        }
 
         deptEmp.changeToDateNow();
         deptEmpRepository.persist(DeptEmp.builder()
@@ -313,6 +341,35 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build());
     }
 
+    private void updateDeptManager(EmpDto.Update dto, Employee employee, Optional<DeptManager> deptManagerOptional) {
+        EmpDto.Update.Content content = dto.getContent();
+        Optional<Department> deptOptional = departmentRepository.findById(content.getDeptNo());
+        if (deptOptional.isEmpty()) {
+            throw new IllegalStateException("Invalid department.");
+        }
+
+        // 매니저에서 변경하는 경우
+        if (deptManagerOptional.isPresent() && (dto.isDeptNo() || dto.isTitle())) {
+            deptManagerOptional.get().changeToDateNow();
+        }
+        // 매니저로 변경하는 경우
+        if (content.getTitle().equals("Manager") && (dto.isDeptNo() || dto.isTitle())) {
+            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
+                throw new IllegalStateException("Manager is already exists.");
+            }
+            deptManagerRepository.persist(DeptManager.builder()
+                    .id(DeptManagerId.builder()
+                            .empNo(content.getEmpNo())
+                            .deptNo(content.getTitle())
+                            .build())
+                    .employee(employee)
+                    .department(deptOptional.get())
+                    .fromDate(LocalDate.now())
+                    .toDate(LocalDate.of(9999, 1, 1))
+                    .build());
+        }
+    }
+
     private void updateTitle(EmpDto.Update.Content content, Employee employee) {
         Optional<Title> titleOptional = titleRepository.findCurrentByEmployee(employee);
         if (titleOptional.isEmpty()) {
@@ -322,12 +379,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         Title title = titleOptional.get();
         if (content.getTitle().equals(title.getId().getTitle())) {
             throw new IllegalStateException("The Title has not changed.");
-        }
-        // 매니저로 변경하고자 할때 부서에 이미 매니저가 있는지 확인
-        if (content.getTitle().equals("Manager")) {
-            if (deptManagerRepository.findCurrentByDeptNo(content.getDeptNo()).isPresent()) {
-                throw new IllegalStateException("Manager is already exists.");
-            }
         }
 
         title.changeToDateNow();
@@ -363,5 +414,29 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .salary(content.getSalary())
                 .toDate(LocalDate.of(9999, 1, 1))
                 .build());
+    }
+
+    /**
+     * 하루에 여러번 변경할 수 없다.
+     */
+    private void validateOnce(EmpDto.Update dto, Employee employee) {
+        if (dto.isSalary()) {
+            salaryRepository.findCurrentByEmployee(employee).ifPresent(salary -> {
+                if (salary.getId().getFromDate().isEqual(LocalDate.now()))
+                    throw new IllegalStateException("You can only change it once a day");
+            });
+        }
+        if (dto.isDeptNo()) {
+            deptEmpRepository.findCurrentByEmployee(employee).ifPresent(deptEmp -> {
+                if (deptEmp.getFromDate().isEqual(LocalDate.now()))
+                    throw new IllegalStateException("You can only change it once a day");
+            });
+        }
+        if (dto.isTitle()) {
+            titleRepository.findCurrentByEmployee(employee).ifPresent(title -> {
+                if (title.getId().getFromDate().isEqual(LocalDate.now()))
+                    throw new IllegalStateException("You can only change it once a day");
+            });
+        }
     }
 }
