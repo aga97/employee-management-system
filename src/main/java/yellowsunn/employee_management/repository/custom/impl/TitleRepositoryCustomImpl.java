@@ -66,21 +66,22 @@ public class TitleRepositoryCustomImpl implements TitleRepositoryCustom {
         return queryFactory
                 .selectFrom(title)
                 .where(title.employee.eq(employee))
-                .orderBy(title.toDate.desc())
+                .orderBy(title.toDate.desc(), title.id.fromDate.desc())
                 .fetch();
     }
 
     @Override
     public Optional<Title> findLatestByEmployee(Employee employee) {
         if (employee != null) {
+            QTitle subTitle = new QTitle("subTitle");
+
             Title findTitle = queryFactory
                     .selectFrom(title)
                     .where(title.employee.eq(employee),
-                            title.toDate.eq(
-                                    select(deptEmp.toDate.max())
-                                            .from(deptEmp)
-                                            .where(deptEmp.employee.eq(employee))
-                                            .groupBy(deptEmp.employee)
+                            Expressions.list(title.id.fromDate, title.toDate).in(
+                                    select(subTitle.id.fromDate.max(), subTitle.toDate.max())
+                                    .from(subTitle)
+                                    .where(subTitle.employee.eq(employee))
                             )
                     ).fetchOne();
             return Optional.ofNullable(findTitle);

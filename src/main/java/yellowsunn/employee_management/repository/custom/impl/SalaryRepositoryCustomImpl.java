@@ -69,7 +69,7 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
         return queryFactory
                 .selectFrom(salary)
                 .where(salary.employee.eq(employee))
-                .orderBy(salary.toDate.desc())
+                .orderBy(salary.toDate.desc(), salary.id.fromDate.desc())
                 .fetch();
     }
 
@@ -77,15 +77,15 @@ public class SalaryRepositoryCustomImpl implements SalaryRepositoryCustom {
     public Optional<Salary> findLatestByEmployee(Employee employee) {
         if (employee != null) {
             QSalary salary = new QSalary("salary");
+            QSalary subSalary = new QSalary("subSalary");
 
             Salary findSalary = queryFactory
                     .selectFrom(salary)
                     .where(salary.employee.eq(employee),
-                            salary.toDate.eq(
-                                    select(deptEmp.toDate.max())
-                                            .from(deptEmp)
-                                            .where(deptEmp.employee.eq(employee))
-                                            .groupBy(deptEmp.employee)
+                            Expressions.list(salary.id.fromDate, salary.toDate).in(
+                                    select(subSalary.id.fromDate.max(), subSalary.toDate.max())
+                                    .from(subSalary)
+                                    .where(subSalary.employee.eq(employee))
                             )
                     ).fetchOne();
 

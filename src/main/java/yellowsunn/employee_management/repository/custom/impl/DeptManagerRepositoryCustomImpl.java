@@ -31,7 +31,7 @@ public class DeptManagerRepositoryCustomImpl implements DeptManagerRepositoryCus
                 .selectFrom(deptManager)
                 .join(deptManager.employee).fetchJoin()
                 .where(deptManager.department.deptNo.eq(deptNo))
-                .orderBy(deptManager.toDate.desc())
+                .orderBy(deptManager.toDate.desc(), deptManager.fromDate.desc())
                 .fetch();
     }
 
