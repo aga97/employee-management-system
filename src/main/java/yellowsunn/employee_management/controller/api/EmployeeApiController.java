@@ -121,4 +121,19 @@ public class EmployeeApiController {
         }
         return success;
     }
+
+    @DeleteMapping("/api/employee/delete/{empNo}")
+    public EmpDto.Success retire(@PathVariable("empNo") Integer empNo) {
+        EmpDto.Success success;
+
+        try {
+            success = employeeService.retire(empNo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return EmpDto.Success.builder()
+                    .success(false)
+                    .build();
+        }
+        return success;
+    }
 }

@@ -41,4 +41,6 @@ public interface EmployeeService {
      * 직원 정보 수정
      */
     EmpDto.Success update(EmpDto.Update dto);
+
+    EmpDto.Success retire(Integer empNo);
 }

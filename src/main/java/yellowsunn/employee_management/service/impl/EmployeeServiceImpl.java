@@ -278,6 +278,32 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    public EmpDto.Success retire(Integer empNo) {
+        Optional<Employee> empOptional = employeeRepository.findById(empNo);
+        if (empOptional.isEmpty()) {
+            throw new IllegalStateException("The employee could not be found.");
+        }
+        Employee employee = empOptional.get();
+
+        deptEmpRepository.findCurrentByEmployee(employee).ifPresentOrElse(DeptEmp::changeToDateNow, () -> {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        });
+
+        titleRepository.findCurrentByEmployee(employee).ifPresentOrElse(Title::changeToDateNow, () -> {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        });
+
+        salaryRepository.findCurrentByEmployee(employee).ifPresentOrElse(Salary::changeToDateNow, () -> {
+            throw new IllegalStateException("Retired employee cannot be changed.");
+        });
+
+        return EmpDto.Success.builder()
+                .success(true)
+                .build();
+    }
+
     private void updateDepartment(EmpDto.Update.Content content, Employee employee) {
         Optional<Department> deptOptional = departmentRepository.findById(content.getDeptNo());
         Optional<DeptEmp> deptEmpOptional = deptEmpRepository.findCurrentByEmployee(employee);
