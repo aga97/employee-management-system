@@ -3,6 +3,7 @@ package yellowsunn.employee_management.repository.custom.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
@@ -111,8 +112,8 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                     .selectFrom(deptEmp)
                     .join(deptEmp.department).fetchJoin()
                     .where(deptEmp.employee.eq(employee),
-                            deptEmp.toDate.eq(
-                                    select(subDeptEmp.toDate.max())
+                            Expressions.list(deptEmp.fromDate, deptEmp.toDate).in(
+                                    select(subDeptEmp.fromDate.max(), subDeptEmp.toDate.max())
                                             .from(subDeptEmp)
                                             .where(subDeptEmp.employee.eq(employee))
                                             .groupBy(subDeptEmp.employee)
