@@ -116,7 +116,6 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                                     select(subDeptEmp.fromDate.max(), subDeptEmp.toDate.max())
                                             .from(subDeptEmp)
                                             .where(subDeptEmp.employee.eq(employee))
-                                            .groupBy(subDeptEmp.employee)
                             )
                     ).fetchOne();
 
@@ -152,7 +151,7 @@ public class DeptEmpRepositoryCustomImpl implements DeptEmpRepositoryCustom {
                 .selectFrom(deptEmp)
                 .join(deptEmp.department).fetchJoin()
                 .where(deptEmp.employee.eq(employee))
-                .orderBy(deptEmp.toDate.desc())
+                .orderBy(deptEmp.toDate.desc(), deptEmp.fromDate.desc())
                 .fetch();
     }
 
