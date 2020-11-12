@@ -43,7 +43,7 @@ public class TestEmployeeController {
         model.addAttribute("lastName", condition.getLastName());
         model.addAttribute("gender",
                 condition.getGender() != null ? condition.getGender().toString() : "");
-        model.addAttribute("deptNo", condition.getDeptNo());
+//        model.addAttribute("deptNo", condition.getDeptNo());
         model.addAttribute("hireDate", condition.getHireDate());
         page.getSort().stream().findFirst().ifPresentOrElse(order -> {
             model.addAttribute("sort", order.getProperty() + (order.isDescending() ? ",desc" : ""));

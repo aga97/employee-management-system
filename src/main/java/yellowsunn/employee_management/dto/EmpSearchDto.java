@@ -1,5 +1,6 @@
 package yellowsunn.employee_management.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,13 +40,13 @@ public class EmpSearchDto {
         private String firstName;
         private String lastName;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        private LocalDate birthDate;
+        private String birthDate;
         private Gender gender;
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate hireDate;
 
-        private String deptNo;
+        @JsonAlias("deptNo")
+        private String deptName;
     }
 }
