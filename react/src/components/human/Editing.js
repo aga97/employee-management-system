@@ -198,7 +198,7 @@ function Editing(props) {
                 <InputLabel>직책</InputLabel>
                 <Select
                   native
-                  value={revise.content.title}
+                  defaultValue={revise.content.title}
                   onChange={handleTitleChange}
                   >
                     <option value="Staff">Staff</option>
@@ -224,7 +224,7 @@ function Editing(props) {
               <InputLabel>부서</InputLabel>
               <Select                
                 native
-                value={revise.content.deptNo}
+                defaultValue={revise.content.deptNo}
                 onChange={handleDeptChange}
                 >
                   <option value="d009">Customer Service</option>
