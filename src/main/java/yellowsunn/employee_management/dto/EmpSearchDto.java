@@ -29,6 +29,7 @@ public class EmpSearchDto {
         private String deptName;
         private String title;
         private Integer Salary;
+        private boolean retirement;
     }
 
     /**
