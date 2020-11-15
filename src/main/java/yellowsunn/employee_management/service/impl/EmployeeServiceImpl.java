@@ -73,6 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                             .deptName(department.getDeptName())
                             .title(titleMap.get(employee.getEmpNo()))
                             .Salary(salaryMap.get(employee.getEmpNo()))
+                            .retirement(!deptEmp.getToDate().isEqual(LocalDate.of(9999, 1, 1)))
                             .build();
                 }).collect(Collectors.toList());
 
