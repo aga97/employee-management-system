@@ -5,7 +5,6 @@
         "salary": "연봉",
         "title": "직책"
     },
-    "empNo" : true, 
     "deptNo": false,
     "salary": false,
     "title": false

@@ -257,8 +257,15 @@ export default function Human() {
     dispatch({ type: 'CHANGE_SORTING', payload: value });
   };
 
+  
+  const tableStyles = {
+    true: {
+      color: 'white',
+      backgroundColor : '#ff4040',
+    }
+  }
 
-  const clickBackdrop = ({ row, ...restProps }) => (
+  const clickBackdrop = ({ row,value, style, ...restProps }) => (
     <Table.Row
       hover
       {...restProps}
@@ -270,9 +277,23 @@ export default function Human() {
       }}
       style={{
         cursor: 'pointer',
+        ...tableStyles[row.retirement],
       }}
-    />
+    />  
   );
+
+  const whiteTextCell = ({ value, row, ...restProps }) => (
+    <Table.Cell>
+      <span
+        style={{
+          ...tableStyles[row.retirement],
+        }}
+      >
+        {value}
+      </span>
+    </Table.Cell>
+  );
+
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -306,7 +327,7 @@ export default function Human() {
             onFiltersChange={changeFilters}
             columnExtensions={filteringStateColumnExtensions}
           />
-          <VirtualTable rowComponent={clickBackdrop}/>
+          <VirtualTable rowComponent={clickBackdrop} cellComponent={whiteTextCell}/>
           <TableHeaderRow showSortingControls/>
           <TableFilterRow />
          
