@@ -100,6 +100,10 @@ function Editing(props) {
       setRevise(
         {
           ...revise,
+          content: {
+            ...revise.content,
+            deptNo: e.target.value,
+          },
           deptNo : false,
         }
       )
@@ -123,6 +127,10 @@ function Editing(props) {
       setRevise(
         {
           ...revise,
+          content : {
+            ...revise.content,
+            title: e.target.value,
+          },
           title : false,
         }
       )
@@ -143,10 +151,16 @@ function Editing(props) {
 
   const handleSalaryChange = (e) => {
     let numSalary = e.target.value * 1; 
+    console.log(datas.content.salary)
+    console.log(numSalary)
     if(numSalary === datas.content.salary) {
       setRevise(
         {
           ...revise,
+          content: {
+            ...revise.content,
+            salary : numSalary,
+          },
           salary : false,
         }
       )
@@ -157,12 +171,13 @@ function Editing(props) {
           ...revise,
           content: {
             ...revise.content,
-            salary: numSalary,
+            salary : numSalary,
           },
           salary : true,
         }
       )
     }
+
   };
 
   if(loading) {

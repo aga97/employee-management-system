@@ -70,7 +70,7 @@ function Push(props) {
         </div>
         }
         임시 메시지
-        {console.log(props.revise)}
+        {console.log(props)}
     </div>
   )
 }
