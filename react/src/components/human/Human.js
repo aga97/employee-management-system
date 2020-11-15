@@ -261,7 +261,7 @@ export default function Human() {
   const tableStyles = {
     true: {
       color: 'white',
-      backgroundColor : '#ff4040',
+      backgroundColor : '#F5A9A9',
     }
   }
 
@@ -282,17 +282,17 @@ export default function Human() {
     />  
   );
 
-  const whiteTextCell = ({ value, row, ...restProps }) => (
-    <Table.Cell>
-      <span
-        style={{
-          ...tableStyles[row.retirement],
-        }}
-      >
-        {value}
-      </span>
-    </Table.Cell>
-  );
+  // const whiteTextCell = ({ value, row, ...restProps }) => (
+  //   <Table.Cell>
+  //     <span
+  //       style={{
+  //         ...tableStyles[row.retirement],
+  //       }}
+  //     >
+  //       {value}
+  //     </span>
+  //   </Table.Cell>
+  // );
 
 
   const handleTabChange = (event, newValue) => {
@@ -327,7 +327,7 @@ export default function Human() {
             onFiltersChange={changeFilters}
             columnExtensions={filteringStateColumnExtensions}
           />
-          <VirtualTable rowComponent={clickBackdrop} cellComponent={whiteTextCell}/>
+          <VirtualTable rowComponent={clickBackdrop} />
           <TableHeaderRow showSortingControls/>
           <TableFilterRow />
          
