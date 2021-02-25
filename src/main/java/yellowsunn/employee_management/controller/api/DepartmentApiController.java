@@ -2,6 +2,7 @@ package yellowsunn.employee_management.controller.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +11,7 @@ import yellowsunn.employee_management.service.DepartmentService;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class DepartmentApiController {
 
     private final DepartmentService departmentService;

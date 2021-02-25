@@ -2,6 +2,7 @@ package yellowsunn.employee_management.controller.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import yellowsunn.employee_management.dto.TitleDto;
@@ -9,6 +10,7 @@ import yellowsunn.employee_management.service.TitleService;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class TitleApiController {
 
     private final TitleService titleService;

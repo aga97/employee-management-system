@@ -16,6 +16,7 @@ import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class EmployeeApiController {
 
     private final EmployeeService employeeService;
