@@ -34,7 +34,7 @@ export default function DepInside(props) {
             try {
                 setDatas(null);
                 setLoading(true);
-                const res = await axios.get('http://localhost:3000/api/departments/' + dep);
+                const res = await axios.get('http://localhost:8080/api/departments/' + dep);
                 if (!unmounted)
                     setDatas(res.data);
             } catch (e) {

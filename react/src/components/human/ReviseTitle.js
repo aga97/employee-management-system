@@ -22,7 +22,7 @@ function ReviseTitle(props) {
       try {           
         setDatas(null);
         setLoading(true);        
-        const res = await axios.get('http://localhost:3000/api/employee/' + props.empNo + '/title')
+        const res = await axios.get('http://localhost:8080/api/employee/' + props.empNo + '/title')
         if(!unmounted)
           setDatas(res.data);     
       } catch (e) {        

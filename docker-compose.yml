@@ -18,5 +18,14 @@ services:
     restart: always
     depends_on:
       - db
+    expose:
+      - "8080"
     ports:
       - "8080:8080"
+
+  frontend:
+    container_name: frontend
+    image: aga97/ems-frontend
+    restart: always
+    ports:
+      - "80:80"

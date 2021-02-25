@@ -15,7 +15,7 @@ import Editing from './Editing';
 
 const VIRTUAL_PAGE_SIZE = 100;
 const MAX_ROWS = 50000;
-const URL = "http://localhost:3000/api/employees";
+const URL = "http://localhost:8080/api/employees";
 const getRowId = row => row.empNo;
 
 const initialState = {
