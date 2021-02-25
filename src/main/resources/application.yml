@@ -3,7 +3,7 @@ spring:
     active: local
 
   datasource:
-    url: jdbc:mysql://db:3306/employees?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://db:3306/employees?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true&autoReconnection=true
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
